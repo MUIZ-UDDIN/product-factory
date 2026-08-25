@@ -121,7 +121,42 @@ function Sidebar({
   );
 }
 
-const MOBILE_ITEMS = SIDEBAR_ITEMS.slice(0, 5);
+function MobileNav({
+  activeNav,
+  onNav,
+  variant = "fixed",
+}: {
+  activeNav: string;
+  onNav: (label: string, target: View) => void;
+  variant?: "fixed" | "static";
+}) {
+  return (
+    <nav
+      className={`border-t border-[var(--border)] z-20 grid grid-cols-6 items-start bg-[var(--bg)] py-2 md:hidden ${
+        variant === "fixed" ? "fixed bottom-0 left-0 right-0" : "relative w-full"
+      }`}
+    >
+      {SIDEBAR_ITEMS.map((item) => {
+        const isActive = activeNav === item.label;
+        const displayLabel = item.label === "Notifications" ? "Alerts" : item.label;
+        return (
+          <button
+            key={item.label}
+            onClick={() => onNav(item.label, item.target)}
+            className={`flex w-full min-w-0 cursor-pointer flex-col items-center gap-0.5 rounded-lg py-1 transition-colors ${
+              isActive
+                ? "font-semibold text-[var(--text)]"
+                : "font-normal text-[var(--text)] hover:bg-[#e8e5de]"
+            }`}
+          >
+            <item.icon className="h-6 w-6 shrink-0" />
+            <span className="w-full truncate px-0.5 text-center text-[10px] font-semibold">{displayLabel}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
 
 const STUDIO_TEMPLATES: Record<"post" | "influencer", { name: string; fill: string; tag: string }[]> = {
   post: [
@@ -139,36 +174,6 @@ const STUDIO_TEMPLATES: Record<"post" | "influencer", { name: string; fill: stri
     { name: "Tech Minimalist", fill: "Sol | productivity gear", tag: "Tech" },
   ],
 };
-
-function MobileNav({
-  activeNav,
-  onNav,
-}: {
-  activeNav: string;
-  onNav: (label: string, target: View) => void;
-}) {
-  return (
-    <nav className="border-t border-[var(--border)] fixed bottom-0 left-0 right-0 z-20 flex items-center justify-around bg-[var(--bg)] py-2 md:hidden">
-      {MOBILE_ITEMS.map((item) => {
-        const isActive = activeNav === item.label;
-        return (
-          <button
-            key={item.label}
-            onClick={() => onNav(item.label, item.target)}
-            className={`flex cursor-pointer flex-col items-center gap-0.5 rounded-lg px-4 py-1 transition-colors ${
-              isActive
-                ? "font-semibold text-[var(--text)]"
-                : "font-normal text-[var(--text)] hover:bg-[#e8e5de]"
-            }`}
-          >
-            <item.icon className="h-6 w-6" />
-            <span className="text-[10px] font-semibold">{item.label}</span>
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
 
 function PostCard({ post }: { post: (typeof FEED_POSTS)[number] }) {
   return (
@@ -238,6 +243,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
   const [visit, setVisit] = useState(0);
   const [activeNav, setActiveNav] = useState("Home");
   const [landingNav, setLandingNav] = useState<string>("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const revealed = useReveal(view, visit);
 
@@ -319,8 +325,8 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
     return (
       <div className="animate-view-enter bg-[var(--bg)] text-[var(--text)] flex min-h-screen font-app-sans">
         <Sidebar activeNav={activeNav} onNav={onNav} />
-        <main className="flex min-h-0 flex-1 px-4 pb-24 pt-5 md:px-8 md:pb-5">
-          <div className="mx-auto flex w-full max-w-5xl gap-10">
+        <main className="flex min-h-0 min-w-0 flex-1 px-4 pb-24 pt-5 md:px-8 md:pb-5">
+          <div className="mx-auto flex w-full min-w-0 max-w-5xl gap-10">
             <div className="min-w-0 flex-1">
               <div className="scrollbar-none mb-4 flex gap-5 overflow-x-auto pb-2">
                 {anthology.map((c) => (
@@ -404,15 +410,15 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
     return (
       <div className="animate-view-enter bg-[var(--bg)] text-[var(--text)] flex min-h-screen font-app-sans">
         <Sidebar activeNav={activeNav} onNav={onNav} />
-        <main className="flex min-h-0 flex-1 justify-center px-4 py-5 md:px-8">
+        <main className="flex min-h-0 min-w-0 flex-1 justify-center px-4 py-5 md:px-8">
           <div className="w-full max-w-2xl pt-2">
-            <div className="flex items-start gap-8">
+            <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-start sm:gap-8 sm:text-left">
               <div className="h-24 w-24 shrink-0 overflow-hidden rounded-full">
                 <img src={me.image} alt={me.handle} className="h-full w-full object-cover" />
               </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-xl font-normal">{me.handle}</h1>
+              <div className="w-full min-w-0 flex-1">
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start sm:gap-3">
+                  <h1 className="w-full text-xl font-normal sm:w-auto">{me.handle}</h1>
                   <button className="border border-[var(--border)] cursor-pointer rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors hover:bg-[var(--border)]/30">
                     Edit profile
                   </button>
@@ -421,7 +427,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
                   </button>
                   <IconMore className="text-[var(--muted)] h-6 w-6 cursor-pointer" />
                 </div>
-                <div className="mt-4 flex gap-8 text-sm">
+                <div className="mt-4 flex justify-around gap-8 text-sm sm:justify-start">
                   <span><strong>247</strong> posts</span>
                   <span><strong>{me.followers.replace(" FOLLOWERS", "").replace("followers", "")}</strong> followers</span>
                   <span><strong>342</strong> following</span>
@@ -435,7 +441,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
               </div>
             </div>
 
-            <div className="mt-8 flex items-center gap-10 border-t border-[var(--border)]">
+            <div className="mt-8 flex items-center justify-center gap-10 border-t border-[var(--border)] sm:justify-start">
               {(["posts", "saved"] as const).map((t) => (
                 <button
                   key={t}
@@ -468,7 +474,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
     return (
       <div className="animate-view-enter bg-[var(--bg)] text-[var(--text)] flex min-h-screen font-app-sans">
         <Sidebar activeNav={activeNav} onNav={onNav} />
-        <main className="flex min-h-0 flex-1 flex-col px-4 pb-24 pt-5 md:px-8 md:pb-5 lg:px-12">
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col px-4 pb-24 pt-5 md:px-8 md:pb-5 lg:px-12">
           <div className="mb-6 flex flex-wrap items-center gap-4">
             <div className="border-[var(--border)] bg-[var(--surface)] flex h-11 flex-1 items-center rounded-xl border px-4">
               <IconSearch className="text-[var(--muted)] mr-3 h-5 w-5" />
@@ -482,7 +488,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
             </div>
           </div>
 
-          <div className="grid flex-1 grid-cols-3 gap-1 overflow-y-auto md:gap-2 lg:gap-3">
+          <div className="grid flex-1 grid-cols-3 gap-1 overflow-hidden md:gap-2 lg:gap-3">
             {EXPLORE_TILES.map((tile) => (
               <div
                 key={tile.id}
@@ -507,7 +513,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
   }
 
   return (
-    <div className="animate-view-enter bg-[var(--bg)] text-[var(--text)] flex min-h-screen flex-col font-app-sans">
+    <div className="animate-view-enter bg-[var(--bg)] text-[var(--text)] flex min-h-screen flex-col pb-16 font-app-sans md:pb-0">
       <nav className="border-b border-[var(--border)] sticky top-0 z-50 bg-[var(--bg)]/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 md:px-10">
           <span className="font-app-serif text-3xl leading-none italic tracking-tight">Instagran</span>
@@ -568,24 +574,79 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
             </button>
             <button
               onClick={() => navigate("explore")}
-              className="border border-[var(--text)] cursor-pointer px-8 py-2.5 text-[10px] font-semibold tracking-[0.25em] text-[var(--text)] uppercase transition-colors duration-200 hover:bg-[var(--text)] hover:text-[var(--bg)]"
+              className="hidden border border-[var(--text)] cursor-pointer px-8 py-2.5 text-[10px] font-semibold tracking-[0.25em] text-[var(--text)] uppercase transition-colors duration-200 hover:bg-[var(--text)] hover:text-[var(--bg)] sm:block"
             >
               Sign up
             </button>
+            <button
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((o) => !o)}
+              className="flex h-9 w-9 cursor-pointer items-center justify-center md:hidden"
+            >
+              {menuOpen ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M4 6h16" />
+                  <path d="M4 12h16" />
+                  <path d="M4 18h16" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
+        {menuOpen && (
+          <div className="border-t border-[var(--border)] bg-[var(--bg)] px-6 pb-8 pt-6 md:hidden">
+            <div className="flex flex-col items-center gap-6 text-center">
+              {([
+                ["Editorial", () => { setLandingNav("Editorial"); navigate("explore"); }],
+                ["Creators", () => { setLandingNav("Creators"); navigate("landing", "#creators"); }],
+                ["Archive", () => { setLandingNav("Archive"); navigate("landing", "#about"); }],
+              ] as [string, () => void][]).map(([label, go]) => (
+                <button
+                  key={label}
+                  onClick={() => { go(); setMenuOpen(false); }}
+                  className={`cursor-pointer text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 ${
+                    landingNav === label ? "text-[var(--text)]" : "text-[var(--muted)] hover:text-[var(--text)]"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+              <div className="h-px w-16 bg-[var(--border)]" />
+              <button
+                onClick={() => { setLandingNav("Log in"); navigate("explore"); setMenuOpen(false); }}
+                className={`cursor-pointer text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 ${
+                  landingNav === "Log in" ? "text-[var(--text)]" : "text-[var(--text)] hover:text-[#6b6b6b]"
+                }`}
+              >
+                Log in
+              </button>
+              <button
+                onClick={() => { navigate("explore"); setMenuOpen(false); }}
+                className="w-full max-w-xs cursor-pointer border border-[var(--text)] px-8 py-2.5 text-[10px] font-semibold tracking-[0.25em] text-[var(--text)] uppercase transition-colors duration-200 hover:bg-[var(--text)] hover:text-[var(--bg)]"
+              >
+                Sign up
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
       <main className="flex-1">
         <section className="mx-auto grid max-w-[1400px] grid-cols-1 items-end gap-12 px-6 py-20 md:grid-cols-12 md:px-10 md:py-32">
-          <div className="md:col-span-8">
+          <div className="text-center md:col-span-8 md:text-left">
             <p className="text-[var(--muted)] text-[10px] font-semibold tracking-[0.3em] uppercase">Volume 04 / The Global Edition</p>
             <h1 className="font-app-serif mt-8 text-[clamp(3.5rem,11vw,10rem)] leading-[0.82] tracking-tighter italic">
               The New
               <br />
               Social Order
             </h1>
-            <div className="mt-12 flex flex-wrap items-center gap-8">
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 md:justify-start">
               <button onClick={() => navigate("feed")} className="bg-[var(--text)] text-[var(--bg)] flex cursor-pointer items-center gap-3 px-10 py-4 text-[10px] font-semibold tracking-[0.25em] uppercase transition-opacity hover:opacity-85">
                 Start exploring
                 <IconArrow className="h-3.5 w-3.5" />
@@ -594,7 +655,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
                 View profiles
               </button>
             </div>
-            <div className="mt-14 flex items-center gap-4">
+            <div className="mt-14 flex items-center justify-center gap-4 md:justify-start">
               <div className="flex -space-x-2">
                 {CREATORS.slice(0, 5).map((c) => (
                   <img key={c.id} src={c.image} alt="" className="border-[var(--bg)] h-8 w-8 rounded-full border object-cover grayscale" />
@@ -621,7 +682,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
         </section>
 
         <section className="border-y border-[var(--border)]">
-          <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-12 px-6 py-16 md:flex-row md:items-baseline md:gap-0 md:px-10">
+          <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-12 px-6 py-16 text-center md:flex-row md:items-baseline md:gap-0 md:px-10 md:text-left">
             {[["10M+", "Active Users"], ["50K+", "AI Creators"], ["1B+", "Posts Shared"], ["190+", "Countries"]].map(([n, label], i) => (
               <div key={label} data-reveal={`stat-${visit}-${i}`} className={`flex flex-col ${reveal(`stat-${visit}-${i}`)}`}>
                 <span className="font-app-serif text-[var(--text)] text-5xl italic leading-none md:text-6xl">{n}</span>
@@ -847,7 +908,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
       <footer className="border-t border-[var(--border)]">
         <div className="mx-auto flex w-full max-w-[1400px] flex-col items-center gap-8 px-6 py-16 md:flex-row md:justify-between md:px-10">
           <span className="font-app-serif text-2xl leading-none italic">Instagran</span>
-          <div className="text-[var(--muted)] flex flex-wrap gap-x-8 gap-y-2 text-[10px] font-semibold tracking-[0.25em] uppercase">
+          <div className="text-[var(--muted)] flex flex-wrap justify-center gap-x-8 gap-y-2 text-[10px] font-semibold tracking-[0.25em] uppercase">
             <span className="cursor-pointer transition-opacity hover:opacity-50">About</span>
             <span className="cursor-pointer transition-opacity hover:opacity-50">Blog</span>
             <span className="cursor-pointer transition-opacity hover:opacity-50">Jobs</span>
@@ -859,6 +920,8 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
           <p className="text-[var(--muted)] text-[10px] tracking-[0.25em] uppercase">2026 Instagran</p>
         </div>
       </footer>
+
+      <MobileNav activeNav={activeNav} onNav={onNav} />
     </div>
   );
 }

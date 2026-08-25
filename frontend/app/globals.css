@@ -24,7 +24,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --animate-view-enter: view-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-view-enter: view-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   --color-ink: #0c141d;
   --color-muted-fg: #67707b;
   --color-line: hsl(214 32% 91%);
@@ -37,7 +37,7 @@
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    /* No transform here: with fill-mode "both", any residual transform would keep the root as a containing block for position:fixed children (breaks fixed mobile nav). */
   }
 }
 
