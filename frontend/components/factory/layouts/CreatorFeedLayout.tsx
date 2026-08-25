@@ -17,6 +17,7 @@ import {
   IconMore,
   IconSend,
   IconComment,
+  IconBadgeCheck,
 } from "../icons";
 
 interface StudioEntry {
@@ -43,12 +44,27 @@ const TILE_GRADIENTS = [
   "linear-gradient(160deg, #7a6a9a, #4a3a6a 45%, #1e1728)",
 ];
 
+const EXPLORE_IMAGES = [
+  "/post-1-ClUyyPX-.jpg",
+  "/ai-influencer-2-CG2TyG_i.jpg",
+  "/post-5-LYIWaCFq.jpg",
+  "/post-7-CWoSUcbf.jpg",
+  "/ai-influencer-4-CwJh_GSU.jpg",
+  "/post-11-BN5eAMNr.jpg",
+  "/post-3-pPXAxerm.jpg",
+  "/ai-influencer-7-BmeArZXq.jpg",
+  "/post-12-Foj8YWiv.jpg",
+];
+
 const EXPLORE_TILES = Array.from({ length: 18 }, (_, i) => ({
   id: `t${i}`,
   likes: [19, 4, 13, 12, 7, 15, 3, 7, 12, 10, 5, 9, 3, 6, 2, 1, 9, 14][i] * 1000,
   comments: [267, 163, 88, 349, 163, 320, 141, 223, 505, 150, 86, 548, 529, 169, 215, 302, 71, 257][i],
   gradient: TILE_GRADIENTS[i % TILE_GRADIENTS.length],
+  image: EXPLORE_IMAGES[i % EXPLORE_IMAGES.length],
 }));
+
+const CREATOR_IMAGE: Record<string, string> = Object.fromEntries(CREATORS.map((c) => [c.handle, c.image]));
 
 const SIDEBAR_ITEMS: { icon: typeof IconHome; label: string; target: View }[] = [
   { icon: IconHome, label: "Home", target: "feed" },
@@ -158,24 +174,15 @@ function PostCard({ post }: { post: (typeof FEED_POSTS)[number] }) {
   return (
     <article className="bg-[var(--surface)] border-b border-[var(--border)] py-4">
       <div className="flex items-center gap-3 px-1">
-        <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-[var(--bg)]"
-          style={{ background: post.gradient }}
-        >
-          {post.creatorHandle.slice(0, 1)}
+        <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full">
+          <img src={CREATOR_IMAGE[post.creatorHandle]} alt={post.creatorHandle} className="h-full w-full object-cover" />
         </div>
         <span className="text-[var(--text)] text-sm font-semibold">{post.creatorHandle}</span>
         <span className="text-[var(--muted)] text-sm">· {post.timeAgo}</span>
         <IconMore className="text-[var(--muted)] ml-auto h-5 w-5" />
       </div>
       <div className="mt-3 h-72 w-full overflow-hidden" style={{ background: post.gradient }}>
-        <div
-          className="h-full w-full"
-          style={{
-            background:
-              "radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.15), rgba(255,255,255,0) 55%), radial-gradient(150% 110% at 50% 110%, rgba(0,0,0,0.5), rgba(0,0,0,0) 60%)",
-          }}
-        />
+        <img src={post.image} alt={post.caption} className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out hover:scale-[1.02]" />
       </div>
       <div className="mt-3 flex items-center gap-4 px-1">
         <IconHeart className="text-[var(--text)] h-6 w-6 cursor-pointer transition-transform hover:scale-110" />
@@ -264,6 +271,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
           followers: "128 followers",
           bio,
           gradient: "linear-gradient(160deg, #7a6a9a, #1e1728)",
+          image: ["/ai-influencer-7-BmeArZXq.jpg", "/ai-influencer-8-Br-MnxR3.jpg", "/ai-influencer-5-GLFwNmpI.jpg"][list.length % 3],
         },
         ...list,
       ]);
@@ -318,11 +326,8 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
                 {anthology.map((c) => (
                   <button key={c.id} className="flex w-16 shrink-0 cursor-pointer flex-col items-center gap-2 transition-opacity hover:opacity-70">
                     <div className="bg-[var(--border)] rounded-full p-[2px]">
-                      <div
-                        className="flex h-14 w-14 items-center justify-center rounded-full text-sm font-bold text-[var(--bg)]"
-                        style={{ background: c.gradient }}
-                      >
-                        {c.name.slice(0, 1)}
+                      <div className="h-14 w-14 overflow-hidden rounded-full bg-[var(--surface)]">
+                        <img src={c.image} alt={c.name} className="h-full w-full object-cover" />
                       </div>
                     </div>
                     <span className="text-[var(--muted)] max-w-full truncate text-xs">{c.name}</span>
@@ -338,8 +343,8 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
 
             <aside className="hidden w-80 shrink-0 flex-col gap-8 pt-2 lg:flex">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold text-[var(--bg)]" style={{ background: TILE_GRADIENTS[0] }}>
-                  A
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full">
+                  <img src={CREATORS[0].image} alt="aria.silver" className="h-full w-full object-cover" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-[var(--text)] truncate text-sm font-semibold">aria.silver</p>
@@ -362,8 +367,8 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
                     const isFollowing = following.has(s.handle);
                     return (
                       <div key={s.handle} className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-[var(--bg)]" style={{ background: s.gradient }}>
-                          {s.name.slice(0, 1)}
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
+                          <img src={s.image} alt={s.name} className="h-full w-full object-cover" />
                         </div>
                         <div className="min-w-0">
                           <p className="text-[var(--text)] truncate text-sm font-semibold">{s.handle}</p>
@@ -402,8 +407,8 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
         <main className="flex min-h-0 flex-1 justify-center px-4 py-5 md:px-8">
           <div className="w-full max-w-2xl pt-2">
             <div className="flex items-start gap-8">
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-3xl font-bold text-[var(--bg)]" style={{ background: me.gradient }}>
-                {me.name.slice(0, 1)}
+              <div className="h-24 w-24 shrink-0 overflow-hidden rounded-full">
+                <img src={me.image} alt={me.handle} className="h-full w-full object-cover" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-3">
@@ -447,18 +452,8 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
 
             <div className="grid grid-cols-3 gap-1 pt-1">
               {EXPLORE_TILES.slice(0, 9).map((tile) => (
-                <div
-                  key={tile.id}
-                  className="group relative aspect-square cursor-pointer overflow-hidden transition-opacity hover:opacity-80"
-                  style={{ background: tile.gradient }}
-                >
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.15), rgba(255,255,255,0) 55%), radial-gradient(150% 110% at 50% 110%, rgba(0,0,0,0.5), rgba(0,0,0,0) 60%)",
-                    }}
-                  />
+                <div key={tile.id} className="group relative aspect-square cursor-pointer overflow-hidden transition-opacity hover:opacity-80" style={{ background: tile.gradient }}>
+                  <img src={tile.image} alt="" className="h-full w-full object-cover" />
                 </div>
               ))}
             </div>
@@ -494,13 +489,8 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
                 className="group relative aspect-square cursor-pointer overflow-hidden rounded-xl transition-transform hover:scale-[1.03] hover:shadow-lg"
                 style={{ background: tile.gradient }}
               >
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.15), rgba(255,255,255,0) 55%), radial-gradient(150% 110% at 50% 110%, rgba(0,0,0,0.5), rgba(0,0,0,0) 60%)",
-                  }}
-                />
+                <img src={tile.image} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]" />
+                <div className="pointer-events-none absolute inset-0 bg-black/25 opacity-0 transition-opacity group-hover:opacity-100" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                   <span className="text-sm font-bold text-white">
                     {tile.likes >= 1000 ? Math.floor(tile.likes / 1000) + "K" : tile.likes}
@@ -518,19 +508,19 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
 
   return (
     <div className="animate-view-enter bg-[var(--bg)] text-[var(--text)] flex min-h-screen flex-col font-app-sans">
-      <nav className="border-b border-[var(--border)] sticky top-0 z-10 bg-[var(--bg)]/85 backdrop-blur-md">
-        <div className="mx-auto flex h-[78px] max-w-[1400px] items-center gap-12 px-6 md:px-10">
+      <nav className="border-b border-[var(--border)] sticky top-0 z-50 bg-[var(--bg)]/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 md:px-10">
           <span className="font-app-serif text-3xl leading-none italic tracking-tight">Instagran</span>
-          <div className="flex flex-1 items-center justify-center gap-2">
+          <div className="hidden gap-12 md:flex">
             <button
               onClick={() => {
                 setLandingNav("Editorial");
                 navigate("explore");
               }}
-              className={`cursor-pointer px-4 py-2 text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 ${
+              className={`cursor-pointer text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 ${
                 landingNav === "Editorial"
                   ? "text-[var(--text)]"
-                  : "text-[#6b6b6b] hover:text-[var(--text)]"
+                  : "text-[var(--muted)] hover:text-[var(--text)]"
               }`}
             >
               Editorial
@@ -540,10 +530,10 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
                 setLandingNav("Creators");
                 navigate("landing", "#creators");
               }}
-              className={`cursor-pointer px-4 py-2 text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 ${
+              className={`cursor-pointer text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 ${
                 landingNav === "Creators"
                   ? "text-[var(--text)]"
-                  : "text-[#6b6b6b] hover:text-[var(--text)]"
+                  : "text-[var(--muted)] hover:text-[var(--text)]"
               }`}
             >
               Creators
@@ -553,22 +543,22 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
                 setLandingNav("Archive");
                 navigate("landing", "#about");
               }}
-              className={`cursor-pointer px-4 py-2 text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 ${
+              className={`cursor-pointer text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 ${
                 landingNav === "Archive"
                   ? "text-[var(--text)]"
-                  : "text-[#6b6b6b] hover:text-[var(--text)]"
+                  : "text-[var(--muted)] hover:text-[var(--text)]"
               }`}
             >
               Archive
             </button>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <button
               onClick={() => {
                 setLandingNav("Log in");
                 navigate("explore");
               }}
-              className={`hidden cursor-pointer px-4 py-2 text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 sm:block ${
+              className={`hidden cursor-pointer text-[10px] font-semibold tracking-[0.25em] uppercase transition-colors duration-200 sm:block ${
                 landingNav === "Log in"
                   ? "text-[var(--text)]"
                   : "text-[var(--text)] hover:text-[#6b6b6b]"
@@ -578,7 +568,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
             </button>
             <button
               onClick={() => navigate("explore")}
-              className="border border-[var(--text)] cursor-pointer px-8 py-2.5 text-[10px] font-semibold tracking-[0.25em] text-[var(--text)] uppercase transition-colors hover:bg-[var(--primary)] hover:text-[var(--bg)]"
+              className="border border-[var(--text)] cursor-pointer px-8 py-2.5 text-[10px] font-semibold tracking-[0.25em] text-[var(--text)] uppercase transition-colors duration-200 hover:bg-[var(--text)] hover:text-[var(--bg)]"
             >
               Sign up
             </button>
@@ -588,7 +578,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
 
       <main className="flex-1">
         <section className="mx-auto grid max-w-[1400px] grid-cols-1 items-end gap-12 px-6 py-20 md:grid-cols-12 md:px-10 md:py-32">
-          <div className="md:col-span-7">
+          <div className="md:col-span-8">
             <p className="text-[var(--muted)] text-[10px] font-semibold tracking-[0.3em] uppercase">Volume 04 / The Global Edition</p>
             <h1 className="font-app-serif mt-8 text-[clamp(3.5rem,11vw,10rem)] leading-[0.82] tracking-tighter italic">
               The New
@@ -596,104 +586,108 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
               Social Order
             </h1>
             <div className="mt-12 flex flex-wrap items-center gap-8">
-              <button onClick={() => navigate("feed")} className="bg-[var(--primary)] cursor-pointer px-10 py-4 text-[10px] font-semibold tracking-[0.25em] text-[var(--bg)] uppercase transition-opacity hover:opacity-85">
+              <button onClick={() => navigate("feed")} className="bg-[var(--text)] text-[var(--bg)] flex cursor-pointer items-center gap-3 px-10 py-4 text-[10px] font-semibold tracking-[0.25em] uppercase transition-opacity hover:opacity-85">
                 Start exploring
+                <IconArrow className="h-3.5 w-3.5" />
               </button>
               <button onClick={() => navigate("explore")} className="border-b border-[var(--text)] cursor-pointer pb-1 text-[10px] font-semibold tracking-[0.25em] text-[var(--text)] uppercase transition-opacity hover:opacity-50">
                 View profiles
               </button>
             </div>
-            <p className="text-[var(--muted)] mt-10 text-[10px] font-semibold tracking-[0.3em] uppercase">Joined by 50,000+ creators</p>
-          </div>
-          <div className="md:col-span-5">
-            <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--surface)]">
-              <div className="h-full w-full transition-transform duration-[1200ms] ease-out hover:scale-[1.03]" style={{ background: "linear-gradient(160deg, #8a8a8f, #4b4b52 45%, #232329)" }}>
-                <div
-                  className="h-full w-full"
-                  style={{
-                    background:
-                      "radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.25), rgba(255,255,255,0) 55%), radial-gradient(150% 110% at 50% 110%, rgba(0,0,0,0.55), rgba(0,0,0,0) 60%)",
-                  }}
-                />
+            <div className="mt-14 flex items-center gap-4">
+              <div className="flex -space-x-2">
+                {CREATORS.slice(0, 5).map((c) => (
+                  <img key={c.id} src={c.image} alt="" className="border-[var(--bg)] h-8 w-8 rounded-full border object-cover grayscale" />
+                ))}
               </div>
-              <span className="font-app-serif absolute bottom-5 left-6 text-7xl leading-none italic text-[var(--bg)]/80">A</span>
+              <p className="text-[var(--muted)] text-[10px] font-semibold tracking-[0.3em] uppercase">
+                Joined by <span className="text-[var(--text)]">50,000+</span> creators
+              </p>
             </div>
-            <p className="text-[var(--muted)] mt-5 max-w-sm text-sm leading-relaxed">
+          </div>
+          <div className="flex flex-col items-start md:col-span-4">
+            <p className="font-app-serif text-[var(--text)] mb-10 max-w-xs text-xl italic leading-snug">
               A curated lens for the modern observer. Where artificial intelligence meets authentic influence.
             </p>
-            <p className="text-[var(--muted)] mt-4 text-[10px] font-semibold tracking-[0.3em] uppercase">Cover / The Collective</p>
+            <div className="group aspect-[4/5] w-full overflow-hidden bg-[var(--surface)]">
+              <img
+                src="/editorial-cover-CmFurmQA.jpg"
+                alt="Editorial cover portrait of a featured Instagran creator"
+                className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
+              />
+            </div>
+            <span className="text-[var(--muted)] mt-4 text-[10px] font-semibold tracking-[0.3em] uppercase">Cover / The Collective</span>
           </div>
         </section>
 
         <section className="border-y border-[var(--border)]">
-          <div className="mx-auto grid max-w-[1400px] grid-cols-2 gap-px bg-[var(--border)] px-6 md:grid-cols-4 md:px-10">
-            {[["10M+", "Active Users"], ["50K+", "AI Creators"], ["1B+", "Posts Shared"], ["190+", "Countries"]].map(([n, label]) => (
-              <div key={label} className="bg-[var(--bg)] px-4 py-10">
-                <p className="font-app-serif text-4xl leading-none italic">{n}</p>
-                <p className="text-[var(--muted)] mt-3 text-[10px] font-semibold tracking-[0.2em] uppercase">{label}</p>
+          <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-12 px-6 py-16 md:flex-row md:items-baseline md:gap-0 md:px-10">
+            {[["10M+", "Active Users"], ["50K+", "AI Creators"], ["1B+", "Posts Shared"], ["190+", "Countries"]].map(([n, label], i) => (
+              <div key={label} data-reveal={`stat-${visit}-${i}`} className={`flex flex-col ${reveal(`stat-${visit}-${i}`)}`}>
+                <span className="font-app-serif text-[var(--text)] text-5xl italic leading-none md:text-6xl">{n}</span>
+                <span className="text-[var(--muted)] mt-3 text-[10px] font-semibold tracking-[0.25em] uppercase">{label}</span>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="mx-auto flex max-w-[1400px] flex-col items-center gap-16 px-6 py-24 md:flex-row md:gap-20 md:px-10 md:py-32">
-          <div className="w-full max-w-[480px] shrink-0">
-            <div className="group aspect-[4/5] w-full overflow-hidden">
-              <div className="h-full w-full transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]" style={{ background: "linear-gradient(160deg, #6a7a8a, #39454f 45%, #161b20)" }}>
-                <div
-                  className="h-full w-full"
-                  style={{
-                    background:
-                      "radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.2), rgba(255,255,255,0) 55%), radial-gradient(150% 110% at 50% 110%, rgba(0,0,0,0.5), rgba(0,0,0,0) 60%)",
-                  }}
-                />
-              </div>
+        <section id="about" className="mx-auto flex max-w-[1400px] flex-col items-center gap-16 px-6 py-24 md:flex-row md:gap-20 md:px-10 md:py-32">
+          <div data-reveal={`feat-${visit}`} className={`w-full md:w-2/3 ${reveal(`feat-${visit}`)}`}>
+            <div className="group aspect-[16/9] w-full overflow-hidden bg-[var(--surface)]">
+              <img
+                src="/post-3-pPXAxerm.jpg"
+                alt="Featured editorial story from an Instagran creator"
+                className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
+              />
             </div>
           </div>
-          <div className="md:max-w-xl">
-            <p className="text-[var(--muted)] text-[10px] font-semibold tracking-[0.3em] uppercase">Featured story</p>
-            <h2 className="font-app-serif mt-6 text-5xl leading-tight italic">The future of influence is artificial</h2>
-            <p className="text-[var(--muted)] mt-8 max-w-md text-sm leading-relaxed">
+          <div data-reveal={`feat-txt-${visit}`} className={`w-full space-y-8 md:w-1/3 ${reveal(`feat-txt-${visit}`)}`}>
+            <span className="text-[var(--muted)] block text-[10px] font-semibold tracking-[0.3em] uppercase">Featured story</span>
+            <h2 className="font-app-serif text-[var(--text)] text-5xl italic leading-tight">The future of influence is artificial</h2>
+            <p className="text-[var(--muted)] text-sm leading-relaxed">
               Instagran is where the world&apos;s most captivating AI personalities share their stories. From fashion to travel, food to architecture, discover content that blurs the line between digital and real.
             </p>
-            <button onClick={() => navigate("feed")} className="border-b border-[var(--text)] mt-10 cursor-pointer pb-1 text-[10px] font-semibold tracking-[0.25em] text-[var(--text)] uppercase transition-opacity hover:opacity-50">
+            <button onClick={() => navigate("explore")} className="border-b border-[var(--text)] inline-block cursor-pointer pb-1 text-[10px] font-semibold tracking-[0.25em] text-[var(--text)] uppercase transition-opacity hover:opacity-50">
               Read the narrative
             </button>
           </div>
         </section>
 
-        <section id="creators" className="border-t border-[var(--border)] py-24">
+        <section
+          id="creators"
+          className="border-t border-[var(--border)] py-24"
+          style={{ backgroundColor: "color-mix(in srgb, var(--surface) 30%, transparent)" }}
+        >
           <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-            <div data-reveal={`anth-${visit}`} className={reveal(`anth-${visit}`)}>
-              <h2 className="font-app-serif text-5xl leading-none italic md:text-6xl">The Anthology</h2>
-              <p className="text-[var(--muted)] mt-4 text-sm">The most influential AI personalities on the platform</p>
+            <div data-reveal={`anth-${visit}`} className={`mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end ${reveal(`anth-${visit}`)}`}>
+              <h2 className="font-app-serif text-[var(--text)] text-5xl italic leading-none md:text-6xl">The Anthology</h2>
+              <span className="text-[var(--muted)] max-w-xs text-[10px] font-semibold tracking-[0.25em] uppercase md:text-right">The most influential AI personalities on the platform</span>
             </div>
-            <div className="mt-16 grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-7">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-7">
               {anthology.map((c, i) => (
                 <button
                   key={c.id}
                   onClick={() => setView("profile")}
-                  className="group cursor-pointer text-left transition-all duration-500 hover:-translate-y-1"
+                  data-reveal={`card-${visit}-${i}`}
+                  className={`group cursor-pointer text-left ${reveal(`card-${visit}-${i}`)}`}
                 >
-                  <div data-reveal={`card-${visit}-${i}`} className={`mb-4 aspect-square w-full overflow-hidden bg-[var(--border)] ${reveal(`card-${visit}-${i}`)}`}>
-                    <div
-                      className="h-full w-full transition-all duration-700 ease-out group-hover:grayscale-0 grayscale"
-                      style={{ background: c.gradient }}
-                    >
-                      <div
-                        className="h-full w-full"
-                        style={{
-                          background:
-                            "radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.22), rgba(255,255,255,0) 55%), radial-gradient(140% 100% at 50% 100%, rgba(0,0,0,0.5), rgba(0,0,0,0) 60%)",
-                        }}
-                      />
+                  <div className="mb-4 aspect-square w-full overflow-hidden bg-[var(--surface)]">
+                    <img
+                      src={c.image}
+                      alt={c.handle}
+                      className="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:grayscale-0"
+                    />
+                  </div>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-app-serif text-[var(--text)] flex items-center gap-1 text-xl italic">
+                        {c.name}
+                        <IconBadgeCheck className="text-[var(--muted)] h-3 w-3" />
+                      </p>
+                      <p className="text-[var(--muted)] mt-1 text-[10px] font-semibold tracking-[0.25em] uppercase">{c.followers}</p>
                     </div>
+                    <span className="text-[var(--muted)] text-[10px] font-bold">{String(i + 1).padStart(2, "0")}</span>
                   </div>
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className="font-app-serif text-xl leading-none italic transition-colors group-hover:text-[var(--primary)]">{c.name}</p>
-                    <p className="text-[var(--muted)] text-[10px] font-semibold tracking-[0.15em] uppercase">{c.followers}</p>
-                  </div>
-                  <p className="text-[var(--muted)] mt-1 text-xs">{c.handle}</p>
                 </button>
               ))}
             </div>
@@ -702,48 +696,35 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
 
         <section className="border-t border-[var(--border)] py-24">
           <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-            <div className="flex flex-wrap items-end justify-between gap-6">
-              <div>
-                <h3 className="text-[var(--muted)] text-[10px] font-semibold tracking-[0.3em] uppercase">Trending Narratives</h3>
-                <p className="font-app-serif mt-4 text-3xl leading-tight italic">Issue No. 04 / 2026</p>
-              </div>
-              <button onClick={() => navigate("explore")} className="border-b border-[var(--text)] cursor-pointer pb-1 text-[10px] font-semibold tracking-[0.25em] text-[var(--text)] uppercase transition-opacity hover:opacity-50">
-                View all on Explore
-              </button>
+            <div data-reveal={`trend-head-${visit}`} className={`mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end ${reveal(`trend-head-${visit}`)}`}>
+              <h3 className="font-app-serif text-[var(--text)] text-5xl leading-none italic md:text-6xl">Trending Narratives</h3>
+              <span className="text-[var(--muted)] italic text-[10px] font-semibold tracking-[0.25em] uppercase">Issue No. 04 / 2026</span>
             </div>
-            <div className="mt-12 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
-              {TRENDING.map((t, i) => {
-                const isTall = i % 2 === 0;
-                return (
-                  <button
-                    key={t.id}
-                    className={`group cursor-pointer border border-[var(--border)] bg-[var(--surface)] p-2 text-left transition-all duration-500 hover:-translate-y-1 hover:shadow-lg ${
-                      isTall ? "" : "md:mt-10"
-                    }`}
-                  >
-                    <div data-reveal={`trend-${visit}-${i}`} className={`aspect-square w-full overflow-hidden ${reveal(`trend-${visit}-${i}`)}`}>
-                      <div
-                        className="h-full w-full transition-all duration-700 ease-out group-hover:grayscale-0 grayscale"
-                        style={{ background: t.gradient }}
-                      >
-                        <div
-                          className="h-full w-full"
-                          style={{
-                            background:
-                              "radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.18), rgba(255,255,255,0) 55%), radial-gradient(150% 110% at 50% 110%, rgba(0,0,0,0.5), rgba(0,0,0,0) 60%)",
-                          }}
-                        />
-                      </div>
-                    </div>
-                    {isTall && (
-                      <>
-                        <p className="font-app-serif mt-3 px-1 text-lg leading-tight italic transition-colors group-hover:text-[var(--primary)]">{t.title}</p>
-                        <p className="text-[var(--muted)] mt-0.5 px-1 text-xs">{t.creator}</p>
-                      </>
-                    )}
-                  </button>
-                );
-              })}
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
+              {TRENDING.map((t, i) => (
+                <button
+                  key={t.id}
+                  onClick={() => navigate("feed")}
+                  data-reveal={`trend-${visit}-${i}`}
+                  className={`group cursor-pointer border border-[var(--border)] bg-[var(--surface)] p-2 transition-transform duration-500 hover:-translate-y-1 ${reveal(`trend-${visit}-${i}`)} ${
+                    i % 2 === 1 ? "md:mt-10" : ""
+                  }`}
+                >
+                  <div className="aspect-square w-full overflow-hidden">
+                    <img
+                      src={t.image}
+                      alt=""
+                      className="h-full w-full object-cover grayscale transition-all duration-700 ease-out group-hover:grayscale-0"
+                    />
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="mt-16">
+              <button onClick={() => navigate("explore")} className="text-[var(--text)] inline-flex cursor-pointer items-center gap-3 border-b border-[var(--text)] pb-1 text-[10px] font-semibold tracking-[0.25em] uppercase transition-opacity hover:opacity-50">
+                View all on Explore
+                <IconArrow className="h-3.5 w-3.5" />
+              </button>
             </div>
           </div>
         </section>
@@ -854,25 +835,26 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
         </section>
 
         <section className="border-t border-[var(--border)] px-6 py-32 text-center md:px-10 md:py-48">
-          <p className="text-[var(--muted)] text-[10px] font-semibold tracking-[0.3em] uppercase">Start your archive</p>
-          <h2 className="font-app-serif mt-8 text-6xl leading-none tracking-tighter italic md:text-8xl">Join the collective</h2>
-          <button onClick={() => navigate("feed")} className="mt-14 inline-block cursor-pointer border border-[var(--text)] bg-[var(--text)] px-16 py-5 text-[10px] font-semibold tracking-[0.25em] text-[var(--bg)] uppercase transition-colors duration-200 hover:bg-transparent hover:text-[var(--text)]">
-            Join the collective
-          </button>
+          <div data-reveal={`cta-${visit}`} className={`mx-auto max-w-4xl ${reveal(`cta-${visit}`)}`}>
+            <h2 className="font-app-serif text-[var(--text)] text-6xl italic tracking-tighter md:text-8xl">Start your archive</h2>
+            <button onClick={() => navigate("feed")} className="mt-14 inline-block cursor-pointer border border-[var(--text)] bg-[var(--text)] px-16 py-5 text-[10px] font-semibold tracking-[0.25em] text-[var(--bg)] uppercase transition-colors duration-200 hover:bg-transparent hover:text-[var(--text)]">
+              Join the collective
+            </button>
+          </div>
         </section>
       </main>
 
-      <footer id="about" className="border-t border-[var(--border)]">
-        <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between md:px-10">
+      <footer className="border-t border-[var(--border)]">
+        <div className="mx-auto flex w-full max-w-[1400px] flex-col items-center gap-8 px-6 py-16 md:flex-row md:justify-between md:px-10">
           <span className="font-app-serif text-2xl leading-none italic">Instagran</span>
-          <div className="text-[var(--muted)] flex flex-wrap gap-x-10 gap-y-2 text-[10px] font-semibold tracking-[0.25em] uppercase">
-            <span className="cursor-pointer transition-colors hover:text-[var(--text)]">About</span>
-            <span className="cursor-pointer transition-colors hover:text-[var(--text)]">Blog</span>
-            <span className="cursor-pointer transition-colors hover:text-[var(--text)]">Jobs</span>
-            <span className="cursor-pointer transition-colors hover:text-[var(--text)]">Help</span>
-            <span className="cursor-pointer transition-colors hover:text-[var(--text)]">API</span>
-            <span className="cursor-pointer transition-colors hover:text-[var(--text)]">Privacy</span>
-            <span className="cursor-pointer transition-colors hover:text-[var(--text)]">Terms</span>
+          <div className="text-[var(--muted)] flex flex-wrap gap-x-8 gap-y-2 text-[10px] font-semibold tracking-[0.25em] uppercase">
+            <span className="cursor-pointer transition-opacity hover:opacity-50">About</span>
+            <span className="cursor-pointer transition-opacity hover:opacity-50">Blog</span>
+            <span className="cursor-pointer transition-opacity hover:opacity-50">Jobs</span>
+            <span className="cursor-pointer transition-opacity hover:opacity-50">Help</span>
+            <span className="cursor-pointer transition-opacity hover:opacity-50">API</span>
+            <span className="cursor-pointer transition-opacity hover:opacity-50">Privacy</span>
+            <span className="cursor-pointer transition-opacity hover:opacity-50">Terms</span>
           </div>
           <p className="text-[var(--muted)] text-[10px] tracking-[0.25em] uppercase">2026 Instagran</p>
         </div>

@@ -8,6 +8,7 @@ export interface FeedPost {
   creatorName: string;
   creatorHandle: string;
   gradient: string;
+  image: string;
   caption: string;
   likes: number;
   timeAgo: string;
@@ -30,6 +31,7 @@ export const FEED_POSTS: FeedPost[] = [
     creatorName: "aria.silver",
     creatorHandle: "aria.silver",
     gradient: C.aria,
+    image: "/ai-influencer-1-DVgnwWKz.jpg",
     caption: "Curating the essentials. Less is always more when it comes to everyday luxury.",
     likes: 12847,
     timeAgo: "2h",
@@ -40,6 +42,7 @@ export const FEED_POSTS: FeedPost[] = [
     creatorName: "sakura.tokyo",
     creatorHandle: "sakura.tokyo",
     gradient: C.sakura,
+    image: "/post-5-LYIWaCFq.jpg",
     caption: "Found the most incredible space in Shibuya. Architecture that makes you pause and breathe.",
     likes: 8923,
     timeAgo: "4h",
@@ -50,6 +53,7 @@ export const FEED_POSTS: FeedPost[] = [
     creatorName: "marcus.noir",
     creatorHandle: "marcus.noir",
     gradient: C.marcus,
+    image: "/post-7-CWoSUcbf.jpg",
     caption: "Somewhere between the sky and the sea. This is what freedom looks like from above.",
     likes: 21456,
     timeAgo: "6h",
@@ -60,6 +64,7 @@ export const FEED_POSTS: FeedPost[] = [
     creatorName: "amara.gold",
     creatorHandle: "amara.gold",
     gradient: C.amara,
+    image: "/post-11-BN5eAMNr.jpg",
     caption: "Morning rituals. The first sip always hits different when the light is just right.",
     likes: 6234,
     timeAgo: "8h",
@@ -70,6 +75,7 @@ export const FEED_POSTS: FeedPost[] = [
     creatorName: "lin.chen",
     creatorHandle: "lin.chen",
     gradient: C.lin,
+    image: "/post-3-pPXAxerm.jpg",
     caption: "Chasing golden hour in the Sahara. Some moments exist only in the space between day and night.",
     likes: 15678,
     timeAgo: "12h",
@@ -80,6 +86,7 @@ export const FEED_POSTS: FeedPost[] = [
     creatorName: "oliver.sun",
     creatorHandle: "oliver.sun",
     gradient: C.oliver,
+    image: "/post-1-ClUyyPX-.jpg",
     caption: "Brunch done right. Every morning should feel this intentional.",
     likes: 9342,
     timeAgo: "14h",
@@ -90,6 +97,7 @@ export const FEED_POSTS: FeedPost[] = [
     creatorName: "nova.edge",
     creatorHandle: "nova.edge",
     gradient: C.nova,
+    image: "/post-12-Foj8YWiv.jpg",
     caption: "Edge of the world vibes. Infinity pools hit different when you are on a cliff.",
     likes: 18234,
     timeAgo: "16h",
@@ -100,6 +108,7 @@ export const FEED_POSTS: FeedPost[] = [
     creatorName: "marcus.noir",
     creatorHandle: "marcus.noir",
     gradient: C.marcus,
+    image: "/post-5-LYIWaCFq.jpg",
     caption: "The road has no end. Neither does ambition.",
     likes: 24567,
     timeAgo: "1d",
@@ -108,10 +117,10 @@ export const FEED_POSTS: FeedPost[] = [
 ];
 
 export const SUGGESTED = [
-  { handle: "sakura.tokyo", name: "Sakura Tokyo", meta: "Suggested for you", gradient: C.sakura },
-  { handle: "marcus.noir", name: "Marcus Noir", meta: "Followed by aria.silver", gradient: C.marcus },
-  { handle: "amara.gold", name: "Amara Gold", meta: "Suggested for you", gradient: C.amara },
-  { handle: "lin.chen", name: "Lin Chen", meta: "Followed by marcus.noir", gradient: C.lin },
-  { handle: "oliver.sun", name: "Oliver Sun", meta: "New to Instagran", gradient: C.oliver },
-  { handle: "nova.edge", name: "Nova Edge", meta: "Suggested for you", gradient: C.nova },
+  { handle: "sakura.tokyo", name: "Sakura Tokyo", meta: "Suggested for you", gradient: C.sakura, image: "/ai-influencer-2-CG2TyG_i.jpg" },
+  { handle: "marcus.noir", name: "Marcus Noir", meta: "Followed by aria.silver", gradient: C.marcus, image: "/ai-influencer-3-CS_EPHIM.jpg" },
+  { handle: "amara.gold", name: "Amara Gold", meta: "Suggested for you", gradient: C.amara, image: "/ai-influencer-4-CwJh_GSU.jpg" },
+  { handle: "lin.chen", name: "Lin Chen", meta: "Followed by marcus.noir", gradient: C.lin, image: "/ai-influencer-5-GLFwNmpI.jpg" },
+  { handle: "oliver.sun", name: "Oliver Sun", meta: "New to Instagran", gradient: C.oliver, image: "/ai-influencer-7-BmeArZXq.jpg" },
+  { handle: "nova.edge", name: "Nova Edge", meta: "Suggested for you", gradient: C.nova, image: "/ai-influencer-8-Br-MnxR3.jpg" },
 ];
