@@ -124,36 +124,42 @@ function Sidebar({
 function MobileNav({
   activeNav,
   onNav,
-  variant = "fixed",
 }: {
   activeNav: string;
   onNav: (label: string, target: View) => void;
-  variant?: "fixed" | "static";
 }) {
   return (
-    <nav
-      className={`border-t border-[var(--border)] z-20 grid grid-cols-6 items-start bg-[var(--bg)] py-2 md:hidden ${
-        variant === "fixed" ? "fixed bottom-0 left-0 right-0" : "relative w-full"
-      }`}
-    >
-      {SIDEBAR_ITEMS.map((item) => {
-        const isActive = activeNav === item.label;
-        const displayLabel = item.label === "Notifications" ? "Alerts" : item.label;
-        return (
-          <button
-            key={item.label}
-            onClick={() => onNav(item.label, item.target)}
-            className={`flex w-full min-w-0 cursor-pointer flex-col items-center gap-0.5 rounded-lg py-1 transition-colors ${
-              isActive
-                ? "font-semibold text-[var(--text)]"
-                : "font-normal text-[var(--text)] hover:bg-[#e8e5de]"
-            }`}
-          >
-            <item.icon className="h-6 w-6 shrink-0" />
-            <span className="w-full truncate px-0.5 text-center text-[10px] font-semibold">{displayLabel}</span>
-          </button>
-        );
-      })}
+    <nav className="border-t border-[var(--border)] fixed bottom-0 left-0 right-0 z-20 bg-[var(--bg)] py-2 md:hidden">
+      <div className="flex items-stretch">
+        <button
+          onClick={() => onNav("", "landing")}
+          aria-label="Back to Instagran home"
+          className="border-r border-[var(--border)] text-[var(--muted)] mr-1 flex w-12 shrink-0 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-lg py-1 transition-colors hover:bg-[#e8e5de] hover:text-[var(--text)]"
+        >
+          <IconArrow className="h-5 w-5 rotate-180" />
+          <span className="text-[10px] font-semibold">Menu</span>
+        </button>
+        <div className="grid min-w-0 flex-1 grid-cols-6 items-start">
+          {SIDEBAR_ITEMS.map((item) => {
+            const isActive = activeNav === item.label;
+            const displayLabel = item.label === "Notifications" ? "Alerts" : item.label;
+            return (
+              <button
+                key={item.label}
+                onClick={() => onNav(item.label, item.target)}
+                className={`flex w-full min-w-0 cursor-pointer flex-col items-center gap-0.5 rounded-lg py-1 transition-colors ${
+                  isActive
+                    ? "font-semibold text-[var(--text)]"
+                    : "font-normal text-[var(--text)] hover:bg-[#e8e5de]"
+                }`}
+              >
+                <item.icon className="h-6 w-6 shrink-0" />
+                <span className="w-full truncate px-0.5 text-center text-[10px] font-semibold">{displayLabel}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </nav>
   );
 }
@@ -410,7 +416,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
     return (
       <div className="animate-view-enter bg-[var(--bg)] text-[var(--text)] flex min-h-screen font-app-sans">
         <Sidebar activeNav={activeNav} onNav={onNav} />
-        <main className="flex min-h-0 min-w-0 flex-1 justify-center px-4 py-5 md:px-8">
+        <main className="flex min-h-0 min-w-0 flex-1 justify-center px-4 pt-5 pb-28 md:px-8 md:pb-5">
           <div className="w-full max-w-2xl pt-2">
             <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-start sm:gap-8 sm:text-left">
               <div className="h-24 w-24 shrink-0 overflow-hidden rounded-full">
@@ -513,7 +519,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
   }
 
   return (
-    <div className="animate-view-enter bg-[var(--bg)] text-[var(--text)] flex min-h-screen flex-col pb-16 font-app-sans md:pb-0">
+    <div className="animate-view-enter bg-[var(--bg)] text-[var(--text)] flex min-h-screen flex-col font-app-sans">
       <nav className="border-b border-[var(--border)] sticky top-0 z-50 bg-[var(--bg)]/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 md:px-10">
           <span className="font-app-serif text-3xl leading-none italic tracking-tight">Instagran</span>
@@ -655,7 +661,7 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
                 View profiles
               </button>
             </div>
-            <div className="mt-14 flex items-center justify-center gap-4 md:justify-start">
+            <div className="mt-14 flex flex-col items-center gap-3 text-center sm:flex-row sm:gap-4 md:justify-start">
               <div className="flex -space-x-2">
                 {CREATORS.slice(0, 5).map((c) => (
                   <img key={c.id} src={c.image} alt="" className="border-[var(--bg)] h-8 w-8 rounded-full border object-cover grayscale" />
@@ -920,8 +926,6 @@ export default function CreatorFeedLayout({ app }: { app: AppConfig }) {
           <p className="text-[var(--muted)] text-[10px] tracking-[0.25em] uppercase">2026 Instagran</p>
         </div>
       </footer>
-
-      <MobileNav activeNav={activeNav} onNav={onNav} />
     </div>
   );
 }

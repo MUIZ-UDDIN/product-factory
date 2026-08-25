@@ -543,7 +543,7 @@ export default function ConverterLayout({ app }: { app: AppConfig }) {
 
             {/* Pro */}
             <div className="bg-gradient-hero shadow-elegant text-white relative overflow-hidden rounded-3xl p-10 transition-all duration-500 group hover:scale-105">
-              <div className="border-white/30 bg-white/20 absolute top-6 right-6 flex items-center gap-2 rounded-full border px-4 py-2 backdrop-blur-sm">
+              <div className="border-white/30 bg-white/20 relative z-10 mx-auto mb-6 flex w-fit items-center gap-2 rounded-full border px-4 py-2 backdrop-blur-sm sm:absolute sm:top-6 sm:right-6 sm:z-auto sm:mb-0">
                 <Icon name="star" className="h-4 w-4 fill-current text-yellow-300" />
                 <span className="text-sm font-semibold">Most Popular</span>
               </div>
