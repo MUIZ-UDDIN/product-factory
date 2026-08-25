@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+__pycache__/
+.venv/
+.env
+.env.local
+.DS_Store
+*.log
+.playwright-mcp/
