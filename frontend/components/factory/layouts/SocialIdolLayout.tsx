@@ -2,21 +2,57 @@
 
 import type { AppConfig } from "@/lib/registry";
 
-const MEMBERS = [
-  { name: "KAIRO", role: "Main Vocalist", skill: "Vocal Synthesis", pct: 98, gradient: "from-pink-500 to-rose-600" },
-  { name: "LUNA", role: "Lead Dancer", skill: "Choreography AI", pct: 95, gradient: "from-purple-500 to-indigo-600" },
-  { name: "NOVA", role: "Visual", skill: "AI Portrait", pct: 97, gradient: "from-cyan-400 to-blue-500" },
-  { name: "ZEPHYR", role: "Rapper", skill: "Neural Audio", pct: 94, gradient: "from-amber-400 to-orange-500" },
+/* Product 3 — Starbiz ("Create Your Own Idol", /3).
+   Pixel clone of https://create-your-own-idol.lovable.app.
+   Custom classes (text-display, eyebrow, text-headline, btn-primary,
+   btn-ghost-white, glow-coral, hairline-grid, glass-card-dark,
+   text-gradient-coral, shadow-glass-lg, animate-float, animate-fade-in-up,
+   stagger-N, font-700 and token colors like bg-primary /
+   text-muted-foreground) are authored product-scoped in app/starbiz.css
+   under .starbiz-root. Imagery lives in public/starbiz/. */
+
+const NAV_LINKS = ["Platform", "Artists", "Pricing", "Enterprise"];
+
+/* Rendered via {} so the apostrophe never hits JSX text directly
+   (react/no-unescaped-entities). */
+const BADGE = "The World's First AI Artist Platform";
+
+const STATS = [
+  { value: "50K+", label: "Artists Created", accent: false },
+  { value: "120+", label: "Countries", accent: true },
+  { value: "2M+", label: "Songs Generated", accent: false },
+  { value: "98%", label: "Satisfaction Rate", accent: false },
+  { value: "01", label: "AI Music Platform", accent: false },
 ];
 
-const STEPS = [
-  { n: "01", title: "Design Members", body: "Create individual AI artists with unique looks, voices, roles, and personalities.", icon: "user" },
-  { n: "02", title: "Generate Songs", body: "AI composes full tracks with lyrics, melody, and production in your chosen genre.", icon: "music" },
-  { n: "03", title: "Direct Videos", body: "Set the stage, costume, and effects. Watch your music video come to life.", icon: "video" },
-  { n: "04", title: "Launch Worldwide", body: "Run AI interviews, build a press kit, and post to every platform at once.", icon: "rocket" },
+const CONTROL_CARDS = [
+  {
+    n: "01",
+    title: "Design Members",
+    body: "Create individual AI artists with unique looks, voices, roles, and personalities.",
+    img: "/starbiz/member-3.jpg",
+  },
+  {
+    n: "02",
+    title: "Generate Songs",
+    body: "AI composes full tracks with lyrics, melody, and production in your chosen genre.",
+    img: "/starbiz/member-4.jpg",
+  },
+  {
+    n: "03",
+    title: "Direct Videos",
+    body: "Set the stage, costume, and effects. Watch your music video come to life.",
+    img: "/starbiz/video-still.jpg",
+  },
+  {
+    n: "04",
+    title: "Launch Worldwide",
+    body: "Run AI interviews, build a press kit, and post to every platform at once.",
+    img: "/starbiz/concert.jpg",
+  },
 ];
 
-const FEATURES = [
+const MEMBER_SPECS = [
   { label: "Face & Style", value: "AI Portrait" },
   { label: "Voice Type", value: "Neural Audio" },
   { label: "Personality", value: "Deep Profile" },
@@ -45,7 +81,15 @@ const PLANS = [
     price: "$29",
     period: "/month",
     desc: "For serious creators ready to launch their act.",
-    features: ["5 AI groups", "7 members each", "Unlimited songs", "4K music videos", "AI interviews", "Social auto-post", "Priority support"],
+    features: [
+      "5 AI groups",
+      "7 members each",
+      "Unlimited songs",
+      "4K music videos",
+      "AI interviews",
+      "Social auto-post",
+      "Priority support",
+    ],
     cta: "Start Creating",
     popular: true,
   },
@@ -54,239 +98,348 @@ const PLANS = [
     price: "$149",
     period: "/month",
     desc: "Full label operations. Multiple acts, full analytics.",
-    features: ["Unlimited groups", "Custom AI training", "White-label export", "Label dashboard", "Revenue analytics", "Dedicated manager", "API access"],
+    features: [
+      "Unlimited groups",
+      "Custom AI training",
+      "White-label export",
+      "Label dashboard",
+      "Revenue analytics",
+      "Dedicated manager",
+      "API access",
+    ],
     cta: "Launch Your Label",
     popular: false,
   },
 ];
 
 const QUOTES = [
-  { q: "I launched my AI K-pop group in one afternoon. First song hit 500K streams in a week.", by: "Sarah K.", role: "Creator, @NOVA_VOID", initials: "SK", grad: "from-pink-500 to-rose-500" },
-  { q: "The music video quality blew everyone away. Nobody could tell it was AI-generated.", by: "Marcus T.", role: "Music Producer", initials: "MT", grad: "from-purple-500 to-indigo-500" },
-  { q: "We run 3 different AI acts through Starbiz. It is like having a full label team in one app.", by: "Jenny L.", role: "Indie Label Owner", initials: "JL", grad: "from-cyan-400 to-blue-500" },
+  {
+    q: "“I launched my AI K-pop group in one afternoon. First song hit 500K streams in a week.”",
+    by: "Sarah K.",
+    role: "Creator, @NOVA_VOID",
+    img: "/starbiz/member-3.jpg",
+  },
+  {
+    q: "“The music video quality blew everyone away. Nobody could tell it was AI-generated.”",
+    by: "Marcus T.",
+    role: "Music Producer",
+    img: "/starbiz/member-1.jpg",
+  },
+  {
+    q: "“We run 3 different AI acts through Starbiz. It's like having a full label team in one app.”",
+    by: "Jenny L.",
+    role: "Indie Label Owner",
+    img: "/starbiz/member-4.jpg",
+  },
 ];
 
-function HeroArt() {
-  return (
-    <div className="relative mx-auto w-full max-w-lg">
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#141218]">
-        <div className="relative aspect-[4/5] bg-gradient-to-br from-[#1a1528] via-[#1e1a2e] to-[#0f0d14]">
-          {/* K-pop group silhouette */}
-          <div className="absolute inset-0 flex items-end justify-center gap-3 px-8 pb-12">
-            {MEMBERS.map((m, i) => (
-              <div key={m.name} className={`w-1/4 ${i % 2 === 1 ? "-translate-y-4" : ""}`}>
-                <div className={`aspect-[3/5] rounded-lg bg-gradient-to-b ${m.gradient} opacity-80`} />
-              </div>
-            ))}
-          </div>
-          {/* Overlay card top right */}
-          <div className="absolute right-4 top-6 rounded-lg border border-white/10 bg-black/60 px-4 py-2 backdrop-blur-sm">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/60">Vocal Synthesis</p>
-            <p className="text-sm font-bold text-white">98%</p>
-          </div>
-          {/* Overlay card bottom left */}
-          <div className="absolute bottom-6 left-4 flex items-center gap-3 rounded-lg border border-white/10 bg-black/60 px-3 py-2 backdrop-blur-sm">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-rose-600 text-[10px] font-bold text-white">
-              K
-            </div>
-            <div>
-              <p className="text-[8px] font-semibold uppercase tracking-[0.15em] text-pink-400">Main Vocalist</p>
-              <p className="text-xs font-bold text-white">KAIRO</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+const FOOTER_LINKS = ["Privacy", "Terms", "Careers", "Blog", "Contact"];
 
-function StepIcon({ name }: { name: string }) {
-  const cls = "h-5 w-5";
-  if (name === "user") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={cls}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
-  if (name === "music") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={cls}><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>;
-  if (name === "video") return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={cls}><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>;
-  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={cls}><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>;
-}
-
-function CheckIcon() {
+function CheckDot() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 text-pink-400">
-      <path d="m5 13 4 4L19 7" />
-    </svg>
-  );
-}
-
-function StarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-yellow-400">
-      <path d="m12 2 2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 16.9 5.9 20.4l1.5-6.8L2.2 9l6.9-.7L12 2z" />
-    </svg>
-  );
-}
-
-function SectionLabel({ text }: { text: string }) {
-  return (
-    <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-pink-400">{text}</p>
+    <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+        <path
+          d="M2 5l2.5 2.5 4-4"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
   );
 }
 
 export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
   return (
-    <div className="font-app-sans min-h-screen bg-[#0c0a09]">
-      {/* Nav */}
-      <nav className="fixed top-0 z-50 flex items-center border-b border-white/5 bg-[#0c0a09]/80 px-6 py-4 backdrop-blur-md md:px-10">
-        <div className="flex items-center gap-2">
-          <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-pink-500">
-            <path d="m12 2 2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 16.9 5.9 20.4l1.5-6.8L2.2 9l6.9-.7L12 2z" />
-          </svg>
-          <span className="font-app-display text-lg font-bold tracking-[0.15em] text-white">STARBIZ</span>
-        </div>
-        <div className="hidden items-center gap-8 pl-16 md:flex">
-          {["Platform", "Artists", "Pricing", "Enterprise"].map((l) => (
-            <a key={l} href={`#${l.toLowerCase()}`} className="cursor-pointer text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60 transition-colors hover:text-white">
-              {l}
+    <div className="starbiz-root min-h-screen">
+      {/* ---------------- Nav ---------------- */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between border-b border-white/5 px-4 py-5 sm:px-8"
+        style={{
+          background: "rgba(10, 10, 12, 0.72)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+        }}
+      >
+        <a href="#" className="flex items-center gap-2.5">
+          <img src="/starbiz/starbiz-logo.png" alt="Starbiz logo" className="h-8 w-8 object-contain" />
+          <span className="text-display text-2xl tracking-widest">Starbiz</span>
+        </a>
+        <div className="hidden items-center gap-10 md:flex">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link}
+              href="#"
+              className="eyebrow text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {link}
             </a>
           ))}
         </div>
-        <div className="ml-auto flex items-center gap-5 border-l border-white/10 pl-8">
-          <button className="cursor-pointer text-[11px] font-semibold uppercase tracking-[0.15em] text-white/70 transition-colors hover:text-white">Sign In</button>
-          <button className="cursor-pointer rounded-lg border border-pink-500 bg-pink-500/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.15em] text-pink-400 transition-colors hover:bg-pink-500 hover:text-white">Get Started</button>
+        {/* whitespace-nowrap + px-4 sm:px-8 keep one clean row at 390px
+            (the reference wraps its button labels there); identical ≥640px */}
+        <div className="flex items-center gap-4">
+          <button className="eyebrow whitespace-nowrap px-2 py-2 text-muted-foreground transition-colors hover:text-foreground">
+            Sign In
+          </button>
+          <button className="btn-primary whitespace-nowrap px-6 py-3">Get Started</button>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden px-6 pt-28 pb-16 md:pt-36 md:pb-24">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
-          <div>
-            <SectionLabel text="The World's First AI Artist Platform" />
-            <h1 className="font-app-display mb-5 text-6xl font-bold leading-[0.95] tracking-tight text-white md:text-7xl xl:text-8xl">
-              CREATE<br />YOUR<br />
-              <span className="text-pink-500">OWN STAR.</span>
+      {/* ---------------- Hero ---------------- */}
+      <section className="relative overflow-hidden px-6 pb-16 pt-28 md:px-10">
+        <div className="glow-coral -left-32 top-24 h-[520px] w-[520px] bg-accent opacity-30" />
+        <div className="glow-coral -right-32 bottom-0 h-[520px] w-[520px] bg-primary opacity-20" />
+        <div className="hairline-grid absolute inset-0 opacity-60" />
+
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-12">
+          <div className="flex flex-col lg:col-span-7">
+            <div className="animate-fade-in-up stagger-1 mb-10 inline-flex w-fit items-center gap-3 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+              <span className="eyebrow text-primary">{BADGE}</span>
+            </div>
+            <h1
+              className="text-display animate-fade-in-up stagger-2 mb-8"
+              style={{ fontSize: "clamp(4rem, 10vw, 8.5rem)" }}
+            >
+              Create Your
+              <br />
+              <span className="text-gradient-coral">Own Star.</span>
             </h1>
-            <p className="mb-8 max-w-md text-base leading-relaxed text-white/60">
-              Build an AI K-pop group from scratch. Design members, generate songs, direct music videos, run live interviews, then launch to the world.
+            <p className="animate-fade-in-up stagger-3 mb-12 max-w-md text-lg leading-relaxed text-muted-foreground">
+              Build an AI K-pop group from scratch. Design members, generate songs, direct music
+              videos, run live interviews, then launch to the world.
             </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <button className="cursor-pointer rounded-lg bg-pink-500 px-6 py-3 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition-opacity hover:opacity-90 active:scale-[0.98]">
-                Enter the Studio
-              </button>
-              <button className="cursor-pointer rounded-lg border border-white/20 bg-white/5 px-6 py-3 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition-colors hover:bg-white/10">
-                Watch Demo
-              </button>
+            <div className="animate-fade-in-up stagger-4 flex flex-wrap gap-5">
+              <button className="btn-primary px-10 py-5">Enter the Studio</button>
+              <button className="btn-ghost-white px-10 py-5">Watch Demo</button>
             </div>
           </div>
-          <HeroArt />
-        </div>
-      </section>
 
-      {/* Stats bar */}
-      <section className="border-y border-white/5 bg-white/[0.02] px-6 py-6">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-6">
-          {[
-            { n: "50K+", l: "Artists Created" },
-            { n: "120+", l: "Countries" },
-            { n: "2M+", l: "Songs Generated" },
-            { n: "98%", l: "Satisfaction Rate" },
-          ].map((s) => (
-            <div key={s.l} className="text-center">
-              <p className="text-2xl font-bold text-white">{s.n}</p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/50">{s.l}</p>
+          <div className="relative animate-fade-in-up stagger-3 lg:col-span-5">
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-sm">
+              <div className="absolute -inset-4 border border-white/5" />
+              <div className="absolute -inset-4 h-24 w-24 border-l border-t border-primary/40" />
+              <div className="relative h-full w-full overflow-hidden bg-card">
+                <img
+                  src="/starbiz/hero-band.jpg"
+                  alt="AI-generated K-pop group in neon-lit city"
+                  className="h-full w-full object-cover object-top"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,hsl(var(--sb-background))_0%,transparent_50%,transparent_100%)]" />
+              </div>
+
+              <div className="animate-float absolute -left-6 bottom-1/4 border border-white/10 bg-white/5 p-4 shadow-glass-lg backdrop-blur-xl xl:-left-12">
+                <div className="flex items-center gap-4">
+                  <img
+                    src="/starbiz/member-1.jpg"
+                    alt="KAIRO"
+                    className="h-10 w-10 rounded-full border border-primary/50 object-cover"
+                  />
+                  <div>
+                    <div className="eyebrow text-primary">Main Vocalist</div>
+                    <div className="font-700 text-sm tracking-wide">KAIRO</div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="animate-float absolute -right-4 top-12 border border-accent/30 bg-accent/10 p-4 shadow-glass-lg backdrop-blur-xl xl:-right-8"
+                style={{ animationDuration: "7s" }}
+              >
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between gap-8">
+                    <span className="eyebrow text-muted-foreground">Vocal Synthesis</span>
+                    <span className="eyebrow text-primary">98%</span>
+                  </div>
+                  <div className="h-1 w-32 overflow-hidden rounded-full bg-white/10">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: "98%",
+                        background:
+                          "linear-gradient(90deg, hsl(var(--sb-primary-glow)), hsl(var(--sb-primary-deep)))",
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative z-10 mx-auto mt-24 grid max-w-7xl grid-cols-2 gap-8 border-t border-white/5 pt-10 md:grid-cols-5">
+          {STATS.map((s) => (
+            <div key={s.label} className="flex flex-col gap-1">
+              <span
+                className={`text-display text-4xl tracking-widest ${s.accent ? "text-primary" : "text-foreground"}`}
+              >
+                {s.value}
+              </span>
+              <span className="eyebrow text-muted-foreground">{s.label}</span>
             </div>
           ))}
-          <div className="flex items-center gap-2">
-            <span className="rounded bg-pink-500/15 px-2 py-0.5 text-[10px] font-bold text-pink-400">01</span>
-            <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/40">AI Music Platform</span>
-          </div>
         </div>
       </section>
 
-      {/* From idea to debut */}
-      <section className="px-6 py-24 md:py-32">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-14 max-w-2xl">
-            <SectionLabel text="Full Creative Control" />
-            <h2 className="font-app-display text-4xl font-bold leading-tight text-white md:text-5xl">
-              From idea to debut<br />in one session.
-            </h2>
-            <p className="text-muted-fg mt-4 text-lg">No music experience needed. Our AI handles the craft, you bring the vision.</p>
+      {/* ---------------- Full creative control ---------------- */}
+      <section className="relative px-6 py-28 md:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div className="space-y-4">
+              <p className="eyebrow text-primary">Full Creative Control</p>
+              <h2 className="text-display text-5xl md:text-7xl">
+                From idea to debut
+                <br />
+                in one session.
+              </h2>
+            </div>
+            <p className="max-w-sm text-muted-foreground">
+              No music experience needed. Our AI handles the craft, you bring the vision.
+            </p>
           </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map((s) => (
-              <div key={s.n} className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/30 hover:bg-pink-500/5">
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 text-pink-400">
-                  <StepIcon name={s.icon} />
+
+          <div className="grid grid-cols-1 gap-px border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-4">
+            {CONTROL_CARDS.map((card) => (
+              <div key={card.n} className="group overflow-hidden bg-background">
+                <div className="relative h-52 overflow-hidden">
+                  <img
+                    src={card.img}
+                    alt={card.title}
+                    className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(to_top,hsl(var(--sb-background)),transparent)] opacity-70" />
+                  <span className="eyebrow absolute left-4 top-4 text-primary">{card.n}</span>
                 </div>
-                <span className="mb-2 inline-block rounded bg-white/5 px-2 py-0.5 text-[10px] font-bold text-white/40">{s.n}</span>
-                <h3 className="font-app-display mb-2 text-xl font-semibold text-white">{s.title}</h3>
-                <p className="text-sm leading-relaxed text-white/50">{s.body}</p>
+                <div className="space-y-3 p-7">
+                  <h3 className="text-headline text-2xl">{card.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{card.body}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stadium-ready band */}
-      <section className="relative overflow-hidden px-6 py-24 md:py-32">
-        <div className="absolute inset-0 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-transparent" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#141218]">
-            <div className="aspect-video bg-gradient-to-br from-[#1a1528] via-[#2a1a3e] to-[#0f0d14]">
-              <div className="flex h-full items-center justify-center">
-                <div className="flex -space-x-4">
-                  {MEMBERS.map((m) => (
-                    <div key={m.name} className={`h-16 w-16 rounded-full bg-gradient-to-br ${m.gradient} ring-2 ring-[#141218]`} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <SectionLabel text="Scale Like a Label" />
-            <h2 className="font-app-display mb-6 text-4xl font-bold text-white md:text-5xl">
-              Stadium-ready<br />from day one.
+      {/* ---------------- Stadium band ---------------- */}
+      <section className="relative overflow-hidden">
+        <img
+          src="/starbiz/concert.jpg"
+          alt="Sold-out AI idol concert"
+          className="h-[68vh] w-full object-cover opacity-45"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,hsl(var(--sb-background))_0%,hsl(var(--sb-background)/0.4)_50%,hsl(var(--sb-background))_100%)]" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 px-8 text-center">
+          <p className="eyebrow text-primary">Scale Like a Label</p>
+          <h2 className="text-display max-w-4xl text-6xl md:text-8xl">
+            Stadium-ready
+            <br />
+            from day one.
+          </h2>
+          <button className="btn-primary px-12 py-5">Start Your Band Now</button>
+        </div>
+      </section>
+
+      {/* ---------------- AI member design ---------------- */}
+      <section className="relative px-6 py-28 md:px-10">
+        <div className="glow-coral -left-24 top-1/3 h-[420px] w-[420px] bg-accent opacity-20" />
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-16 grid-cols-1 lg:grid-cols-2">
+          <div className="space-y-8">
+            <p className="eyebrow text-primary">AI Member Design</p>
+            <h2 className="text-display text-6xl md:text-7xl">
+              Every idol.
+              <br />
+              Fully yours.
             </h2>
-            <button className="cursor-pointer rounded-lg bg-pink-500 px-6 py-3 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition-opacity hover:opacity-90 active:scale-[0.98]">
-              Start Your Band Now
-            </button>
+            <p className="max-w-md text-lg leading-relaxed text-muted-foreground">
+              Design each member&apos;s appearance, voice, personality, and role. Our AI generates
+              photorealistic portraits, unique vocal styles, and complete backstories.
+            </p>
+            <div className="grid grid-cols-2 gap-px border border-white/10 bg-white/10">
+              {MEMBER_SPECS.map((spec) => (
+                <div key={spec.label} className="space-y-1 bg-background p-5">
+                  <p className="eyebrow text-muted-foreground">{spec.label}</p>
+                  <p className="text-headline text-xl text-primary">{spec.value}</p>
+                </div>
+              ))}
+            </div>
+            <button className="btn-primary px-9 py-4">Design Your Members</button>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="aspect-square overflow-hidden border border-white/10">
+              <img
+                src="/starbiz/member-1.jpg"
+                alt="AI idol member 1"
+                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+              />
+            </div>
+            <div className="mt-8 aspect-square overflow-hidden border border-white/10">
+              <img
+                src="/starbiz/member-2.jpg"
+                alt="AI idol member 2"
+                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+              />
+            </div>
+            <div className="aspect-square overflow-hidden border border-white/10">
+              <img
+                src="/starbiz/member-3.jpg"
+                alt="AI idol member 3"
+                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+              />
+            </div>
+            <div className="mt-8 aspect-square overflow-hidden border border-white/10">
+              <img
+                src="/starbiz/member-4.jpg"
+                alt="AI idol member 4"
+                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Member design */}
-      <section className="px-6 py-24 md:py-32">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div>
-              <SectionLabel text="AI Member Design" />
-              <h2 className="font-app-display mb-4 text-4xl font-bold text-white md:text-5xl">
-                Every idol.<br />Fully yours.
-              </h2>
-              <p className="mb-8 max-w-md text-base leading-relaxed text-white/60">
-                Design each member&apos;s appearance, voice, personality, and role. Our AI generates photorealistic portraits, unique vocal styles, and complete backstories.
-              </p>
-              <div className="mb-8 grid grid-cols-2 gap-4">
-                {FEATURES.map((f) => (
-                  <div key={f.label} className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/40">{f.label}</p>
-                    <p className="text-sm font-semibold text-white">{f.value}</p>
-                  </div>
-                ))}
+      {/* ---------------- Music video director ---------------- */}
+      <section className="relative border-y border-white/5 bg-card/40 px-6 py-28 md:px-10">
+        <div className="mx-auto grid max-w-7xl items-center gap-16 grid-cols-1 lg:grid-cols-2">
+          <div className="relative aspect-video overflow-hidden border border-white/10">
+            <img
+              src="/starbiz/video-still.jpg"
+              alt="Music video preview"
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-primary/80 backdrop-blur-md transition-transform hover:scale-110">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
               </div>
-              <button className="cursor-pointer rounded-lg border border-pink-500/30 bg-pink-500/10 px-6 py-3 text-[11px] font-bold uppercase tracking-[0.15em] text-pink-400 transition-colors hover:bg-pink-500/20">
-                Design Your Members
-              </button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {MEMBERS.map((m) => (
-                <div key={m.name} className={`overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b ${m.gradient} p-1`}>
-                  <div className="aspect-[3/4] rounded-xl bg-[#0c0a09] p-3">
-                    <div className={`h-full w-full rounded-lg bg-gradient-to-b ${m.gradient} opacity-60`} />
-                    <div className="mt-2 text-center">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-white/50">{m.role}</p>
-                      <p className="text-xs font-bold text-white">{m.name}</p>
-                    </div>
-                  </div>
+            <div className="absolute bottom-4 left-4 right-4">
+              <div className="glass-card-dark flex items-center gap-3 px-4 py-2.5">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+                <span className="eyebrow">Live Preview</span>
+                <span className="eyebrow ml-auto text-muted-foreground">4K Ultra HD</span>
+              </div>
+            </div>
+          </div>
+          <div className="space-y-8">
+            <p className="eyebrow text-primary">Music Video Director</p>
+            <h2 className="text-display text-6xl md:text-7xl">
+              Cinematic.
+              <br />
+              On demand.
+            </h2>
+            <p className="max-w-md text-lg leading-relaxed text-muted-foreground">
+              Direct studio-quality music videos with AI. Choose sets, lighting, choreography, and
+              visual effects. Export in 4K with full broadcast rights.
+            </p>
+            <div className="space-y-3">
+              {VIDEO_FEATURES.map((feature) => (
+                <div key={feature} className="flex items-center gap-3">
+                  <CheckDot />
+                  <span className="text-sm text-foreground/80">{feature}</span>
                 </div>
               ))}
             </div>
@@ -294,95 +447,72 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
         </div>
       </section>
 
-      {/* Music Video Director */}
-      <section className="px-6 py-24 md:py-32">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#141218]">
-              <div className="relative aspect-video bg-gradient-to-br from-[#1a1528] via-[#2a1a3e] to-[#0f0d14]">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
-                    <svg viewBox="0 0 24 24" fill="white" className="h-6 w-6 ml-1">
-                      <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
-                  </div>
-                </div>
-                <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded bg-black/60 px-2 py-1 backdrop-blur-sm">
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span className="text-[9px] font-semibold text-white">Live Preview</span>
-                </div>
-                <div className="absolute bottom-3 right-3 rounded bg-black/60 px-2 py-1 backdrop-blur-sm">
-                  <span className="text-[9px] font-semibold text-white">4K Ultra HD</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <SectionLabel text="Music Video Director" />
-              <h2 className="font-app-display mb-4 text-4xl font-bold text-white md:text-5xl">
-                Cinematic.<br />On demand.
-              </h2>
-              <p className="mb-8 max-w-md text-base leading-relaxed text-white/60">
-                Direct studio-quality music videos with AI. Choose sets, lighting, choreography, and visual effects. Export in 4K with full broadcast rights.
-              </p>
-              <div className="space-y-3">
-                {VIDEO_FEATURES.map((f) => (
-                  <div key={f} className="flex items-center gap-3">
-                    <CheckIcon />
-                    <span className="text-sm text-white/70">{f}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section id="pricing" className="px-6 py-24 md:py-32">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-12 text-center">
-            <SectionLabel text="Pricing" />
-            <h2 className="font-app-display text-4xl font-bold text-white md:text-5xl">
-              Start free. Scale to a label.
+      {/* ---------------- Pricing ---------------- */}
+      <section className="relative px-6 py-28 md:px-10">
+        <div className="glow-coral left-1/2 top-10 h-[520px] w-[520px] -translate-x-1/2 bg-primary opacity-10" />
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <div className="mb-16 space-y-4 text-center">
+            <p className="eyebrow text-primary">Pricing</p>
+            <h2 className="text-display text-6xl md:text-7xl">
+              Start free.
+              <br />
+              Scale to a label.
             </h2>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {PLANS.map((p) => (
+
+          <div className="grid grid-cols-1 gap-px border border-white/10 bg-white/10 md:grid-cols-3">
+            {PLANS.map((plan) => (
               <div
-                key={p.name}
-                className={`relative flex flex-col rounded-2xl border p-6 ${
-                  p.popular
-                    ? "border-pink-500/50 bg-pink-500/5 shadow-[0_0_40px_rgba(236,72,153,0.15)]"
-                    : "border-white/10 bg-white/[0.03]"
-                }`}
+                key={plan.name}
+                className="relative space-y-7 bg-background p-8 transition-colors duration-500 hover:bg-card"
+                style={
+                  plan.popular
+                    ? {
+                        background:
+                          "linear-gradient(160deg, hsl(var(--sb-primary) / 0.12), transparent 60%)",
+                      }
+                    : undefined
+                }
               >
-                {p.popular && (
-                  <span className="absolute -top-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-pink-500 px-3 py-1 text-[10px] font-bold text-white">
-                    <StarIcon /> Most Popular
+                {plan.popular && (
+                  <span className="eyebrow absolute right-6 top-6 border border-primary/40 px-2 py-1 text-primary">
+                    Most Popular
                   </span>
                 )}
-                <p className="text-sm font-semibold text-white/60">{p.name}</p>
-                <div className="mt-3 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white">{p.price}</span>
-                  <span className="text-sm text-white/40">{p.period}</span>
+                {/* Reference build uses Tailwind v3 space-y semantics
+                    (`> * + *` margin-TOP): its absolutely-positioned "Most
+                    Popular" badge is the FIRST child, so every following block
+                    gets pushed down 28px inside the popular card. Tailwind v4
+                    (our stack) applies space-y as margin-BOTTOM instead, which
+                    shifts nothing here — reproduce v3's net layout explicitly.
+                    Measured on ref: header y+412, features y+559, CTA y+787,
+                    card 517px tall. */}
+                <div className={plan.popular ? "mt-7" : undefined}>
+                  <p className="eyebrow mb-3 text-muted-foreground">{plan.name}</p>
+                  <div className="flex items-end gap-2">
+                    <span className="text-display text-6xl">{plan.price}</span>
+                    <span className="mb-2 text-sm text-muted-foreground">{plan.period}</span>
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">{plan.desc}</p>
                 </div>
-                <p className="mt-3 text-sm text-white/50">{p.desc}</p>
-                <div className="mt-6 flex-1 space-y-2.5">
-                  {p.features.map((f) => (
-                    <div key={f} className="flex items-center gap-2.5">
-                      <CheckIcon />
-                      <span className="text-sm text-white/70">{f}</span>
+                <div className="space-y-2.5">
+                  {plan.features.map((feature) => (
+                    <div key={feature} className="flex items-center gap-2.5">
+                      <span
+                        className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${
+                          plan.popular ? "bg-primary" : "bg-muted-foreground"
+                        }`}
+                      />
+                      <span className="text-sm text-foreground/80">{feature}</span>
                     </div>
                   ))}
                 </div>
                 <button
-                  className={`mt-6 w-full cursor-pointer rounded-lg py-3 text-[11px] font-bold uppercase tracking-[0.15em] transition-all active:scale-[0.98] ${
-                    p.popular
-                      ? "bg-pink-500 text-white hover:opacity-90"
-                      : "border border-white/20 bg-white/5 text-white hover:bg-white/10"
+                  className={`w-full py-4 transition-all duration-300 ${
+                    plan.popular ? "btn-primary" : "btn-ghost-white"
                   }`}
                 >
-                  {p.cta}
+                  {plan.cta}
                 </button>
               </div>
             ))}
@@ -390,65 +520,80 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="px-6 py-24 md:py-32">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-12 text-center">
-            <SectionLabel text="Creators Love It" />
-            <h2 className="font-app-display text-4xl font-bold text-white md:text-5xl">
-              The world is building<br />their stars.
-            </h2>
+      {/* ---------------- Testimonials ---------------- */}
+      <section className="px-6 pb-28 md:px-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-12 space-y-3">
+            <p className="eyebrow text-primary">Creators Love It</p>
+            <h2 className="text-display text-5xl md:text-6xl">The world is building their stars.</h2>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {QUOTES.map((t) => (
-              <figure key={t.by} className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 transition-all duration-300 hover:-translate-y-1 hover:border-pink-500/30">
-                <blockquote className="mb-6 text-sm leading-relaxed text-white/70">&ldquo;{t.q}&rdquo;</blockquote>
-                <figcaption className="flex items-center gap-3">
-                  <span
-                    aria-hidden="true"
-                    className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${t.grad} text-xs font-bold text-white`}
-                  >
-                    {t.initials}
-                  </span>
+          <div className="grid grid-cols-1 gap-px border border-white/10 bg-white/10 md:grid-cols-3">
+            {QUOTES.map((quote) => (
+              <div key={quote.by} className="space-y-6 bg-background p-8">
+                <p className="text-lg leading-relaxed text-foreground/90">{quote.q}</p>
+                <div className="flex items-center gap-3 border-t border-white/10 pt-4">
+                  <img
+                    src={quote.img}
+                    alt={quote.by}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
                   <div>
-                    <p className="text-sm font-semibold text-white">{t.by}</p>
-                    <p className="text-xs text-white/40">{t.role}</p>
+                    <p className="font-700 text-sm">{quote.by}</p>
+                    <p className="eyebrow text-muted-foreground">{quote.role}</p>
                   </div>
-                </figcaption>
-              </figure>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="border-t border-white/5 px-6 py-24 text-center md:py-32">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="font-app-display mb-4 text-4xl font-bold text-white md:text-5xl">
-            Ready to create your star?
+      {/* ---------------- Final CTA ---------------- */}
+      <section className="relative overflow-hidden border-t border-white/5 px-8 py-36">
+        <img
+          src="/starbiz/hero-band.jpg"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover object-top opacity-20"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,hsl(var(--sb-background)/0.7)_0%,hsl(var(--sb-background)/0.85)_50%,hsl(var(--sb-background))_100%)]" />
+        <div className="glow-coral bottom-0 left-1/2 h-[400px] w-[600px] -translate-x-1/2 bg-primary opacity-20" />
+        <div className="relative z-10 mx-auto max-w-3xl space-y-8 text-center">
+          <h2 className="text-display text-7xl md:text-8xl">
+            Ready to create
+            <br />
+            <span className="text-gradient-coral">your star?</span>
           </h2>
-          <p className="mb-9 text-lg text-white/60">Join 50,000+ creators worldwide building the next generation of music artists.</p>
-          <button className="cursor-pointer rounded-lg bg-pink-500 px-8 py-4 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition-opacity hover:opacity-90 active:scale-[0.98]">
-            Enter the Studio
-          </button>
+          <p className="text-lg text-muted-foreground">
+            Join 50,000+ creators worldwide building the next generation of music artists.
+          </p>
+          <button className="btn-primary px-14 py-5">Enter the Studio</button>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 px-6 py-14">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 md:flex-row">
-          <div className="flex items-center gap-2">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-pink-500">
-              <path d="m12 2 2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 16.9 5.9 20.4l1.5-6.8L2.2 9l6.9-.7L12 2z" />
-            </svg>
-            <span className="font-app-display text-sm font-bold tracking-[0.15em] text-white">STARBIZ</span>
+      {/* ---------------- Footer ---------------- */}
+      <footer className="border-t border-white/5 px-8 py-12">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 md:flex-row">
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/starbiz/starbiz-logo.png"
+              alt="Starbiz logo"
+              className="h-7 w-7 object-contain"
+            />
+            <span className="text-display text-xl tracking-widest">Starbiz</span>
           </div>
-          <nav className="flex items-center gap-6 text-xs text-white/40">
-            {["Privacy", "Terms", "Careers", "Blog", "Contact"].map((l) => (
-              <a key={l} href="#" className="cursor-pointer transition-colors hover:text-white">{l}</a>
+          <div className="flex flex-wrap gap-8">
+            {FOOTER_LINKS.map((link) => (
+              <a
+                key={link}
+                href="#"
+                className="eyebrow text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {link}
+              </a>
             ))}
-          </nav>
-          <p className="text-xs text-white/30">&copy; 2026 Starbiz</p>
+          </div>
+          <p className="eyebrow text-muted-foreground/60">&copy; 2026 Starbiz</p>
         </div>
       </footer>
     </div>

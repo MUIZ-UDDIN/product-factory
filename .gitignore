@@ -9,4 +9,5 @@ __pycache__/
 *.log
 .playwright-mcp/
 .freebuff/
+.qa/
 PROJECT_STATUS.md

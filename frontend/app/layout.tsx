@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
-import { DM_Sans, Geist, Geist_Mono, Instrument_Serif, Inter, Playfair_Display, Work_Sans } from "next/font/google";
+import {
+  DM_Sans,
+  Geist,
+  Geist_Mono,
+  Instrument_Serif,
+  Inter,
+  Playfair_Display,
+  Work_Sans,
+} from "next/font/google";
 import "./globals.css";
+import "./starbiz.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +47,12 @@ const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
 });
+
+/* Product 3 (Starbiz) — fonts are self-hosted in public/fonts and declared
+   in starbiz.css ("SB Bebas Neue" / "SB Barlow"). next/font is deliberately
+   NOT used here: its build-time download of Bebas Neue was persistently
+   corrupted on this machine (wrong narrow glyphs → wrong headline wrap).
+   See the note at the top of app/starbiz.css. */
 
 export const metadata: Metadata = {
   title: "Muiz Product Factory",
