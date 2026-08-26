@@ -1,280 +1,656 @@
 "use client";
 
+import { type ReactNode } from "react";
 import { type AppConfig } from "@/lib/registry";
 import { useBrain } from "@/components/factory/useBrain";
 import StreamBox from "@/components/factory/StreamBox";
 
+/**
+ * Product 6 — Cold DMs ("AI LeadGen", route /6).
+ * Pixel-clone of ultimate-dming.lovable.app (desktop ref 1440x900, docH 8478).
+ * Fixed h-16 header + 8 bands + warm-brown footer (#2a231d).
+ * Display "Instrument Serif" (72/60px, tracking -1.8px) over "Work Sans",
+ * loaded via Google Fonts <link>; .fd applies the serif.
+ * Accent #d08a39 on ink #201813; sharp 2px radii; bands #0a0a0a/#0f0f0f (cta #080808);
+ * cards = white/[0.03] bg + white/10 hairline border.
+ */
+
+const IMG = "/cold-dms";
+const ACCENT = "#d08a39";
+const INK = "#201813";
+const BAND_DARK = "#0a0a0a";
+const BAND_ALT = "#0f0f0f";
+const FOOT_BG = "#2a231d";
+
+/* Lucide-style inline SVG wrapper (ref uses lucide-react). */
+function Ico({ children, className = "w-5 h-5", style }: { children: ReactNode; className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      style={style}
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+function GoldBtn({ children, className = "", size = "lg" }: { children: ReactNode; className?: string; size?: "lg" | "sm" }) {
+  return (
+    <button
+      className={`inline-flex items-center justify-center whitespace-nowrap rounded-[2px] font-bold transition-all hover:brightness-95 ${
+        size === "lg" ? "h-16 px-12 text-lg" : "h-11 px-6 text-sm font-semibold"
+      } ${className}`}
+      style={{ backgroundColor: ACCENT, color: INK }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function OutlineBtn({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return (
+    <button
+      className={`inline-flex h-16 items-center justify-center whitespace-nowrap rounded-[2px] border-2 border-white/30 px-12 text-lg font-bold text-white transition-colors hover:bg-white/[0.05] ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/* Serif heading + centered sub block (ref: 60px Instrument Serif, mb-16). */
+function SectionHead({ title, sub, subClass = "" }: { title: string; sub: string; subClass?: string }) {
+  return (
+    <div className="text-center mb-16">
+      <h2 className="fd text-[40px] leading-[44px] lg:text-[60px] lg:leading-[60px] text-white mb-6">{title}</h2>
+      <p className={`text-xl text-white/80 max-w-3xl mx-auto ${subClass}`}>{sub}</p>
+    </div>
+  );
+}
+
+/* Icon path sets (lucide). */
+const I = {
+  users: (
+    <>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </>
+  ),
+  briefcase: (
+    <>
+      <rect width="20" height="14" x="2" y="7" rx="2" />
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    </>
+  ),
+  rocket: (
+    <>
+      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+      <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+    </>
+  ),
+  usercheck: (
+    <>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <polyline points="16 11 18 13 22 9" />
+    </>
+  ),
+  layers: (
+    <>
+      <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
+      <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
+      <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+    </>
+  ),
+  sparkles: (
+    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+  ),
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+      <path d="M2 12h20" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </>
+  ),
+  check: <path d="M20 6 9 17l-5-5" />,
+  x: (
+    <>
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </>
+  ),
+  twitter: (
+    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+  ),
+  linkedin: (
+    <>
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4V8h4v1.5A6 6 0 0 1 16 8z" />
+      <rect width="4" height="12" x="2" y="9" />
+      <circle cx="4" cy="4" r="2" />
+    </>
+  ),
+};
+
+/* Verbatim copy from reference ------------------------------------------ */
+
+const NAV_LINKS = ["Features", "How It Works", "Pricing", "Testimonials"];
+
+const HERO_STATS: [string, string][] = [
+  ["10,000+", "Leads Generated"],
+  ["500+", "Happy Customers"],
+  ["95%", "Success Rate"],
+];
+
 const STEPS = [
-  { num: "1", title: "Connect Your Platforms", desc: "Link your Reddit, LinkedIn, Instagram, and Twitter accounts in seconds. Our AI starts scanning immediately." },
-  { num: "2", title: "AI Finds Your Leads", desc: "Our algorithms identify high-intent prospects based on your ideal customer profile, industry, and keywords." },
-  { num: "3", title: "Personalized Messages", desc: "AI crafts unique, personalized DMs for each prospect based on their recent activity and interests." },
-  { num: "4", title: "Send at Scale", desc: "Automatically send personalized messages at the optimal time for each platform and timezone." },
+  { n: "1", t: "We Find All Your Customers", d: "AI scans social platforms for relevant conversations and leads." },
+  { n: "2", t: "We Personalize Your Message", d: "Your outreach doesn't feel like spam, it feels like a genuine conversation." },
+  { n: "3", t: "Mass DM to Bring in Customers", d: "Scale your outreach without lifting a finger." },
 ];
 
-const BENEFITS = [
-  { icon: "🎯", title: "10x Faster Lead Generation", desc: "Stop manual prospecting. Our AI scans thousands of conversations daily to find your perfect customers." },
-  { icon: "💬", title: "Personalized at Scale", desc: "Each message is unique and personalized. No generic templates that get ignored." },
-  { icon: "📊", title: "Smart Analytics", desc: "Track open rates, response rates, and conversion metrics. Optimize your outreach with data." },
-  { icon: "🔒", title: "Platform Safe", desc: "Built with platform guidelines in mind. Your accounts stay safe while generating leads." },
-  { icon: "⚡", title: "Instant Setup", desc: "Connect your accounts and start generating leads in under 5 minutes. No technical skills needed." },
-  { icon: "🤖", title: "AI That Learns", desc: "Our AI improves with every interaction, getting better at finding and converting leads over time." },
+const BEFORE_ITEMS = [
+  "Hours wasted digging through posts, juggling multiple tools",
+  "Sending cold messages that get ignored, manual outreach",
+  "Inconsistent results, low response rates",
+];
+const AFTER_ITEMS = [
+  "AI-powered dashboard finds leads automatically, single platform",
+  "Personalized messages that feel natural, automated outreach",
+  "Consistent results, predictable lead flow at scale",
 ];
 
-const FEATURES = [
-  { title: "Smart Prospect Matching", desc: "AI analyzes profile data, recent posts, and engagement patterns to identify prospects who match your ideal customer profile." },
-  { title: "Dynamic Personalization", desc: "Each message references specific details about the prospect, making it feel like a genuine 1:1 conversation." },
-  { title: "Multi-Platform Support", desc: "Reach prospects across Reddit, LinkedIn, Instagram, Twitter, and more from a single dashboard." },
+const BENEFIT_STATS: [string, string][] = [
+  ["10x", "Faster Lead Generation"],
+  ["75%", "Higher Response Rate"],
+  ["90%", "Time Saved Weekly"],
+];
+
+const PERSONAS = [
+  { icon: I.users, t: "Marketing Agencies", d: "Scale client lead gen automatically, boost your agency.", bullets: ["Multi-client dashboard", "White-label solutions", "Automated reporting"] },
+  { icon: I.briefcase, t: "Sales Teams", d: "Automate outreach, fill the pipeline faster.", bullets: ["CRM integration", "Pipeline automation", "Performance analytics"] },
+  { icon: I.rocket, t: "Startup Founders", d: "Get your first 100 customers faster, scale efficiently.", bullets: ["Bootstrap-friendly", "Rapid scaling", "Product-market fit"] },
+  { icon: I.usercheck, t: "Consultants & Freelancers", d: "Land more clients without cold-calling, grow your practice.", bullets: ["Personal branding", "Warm introductions", "Referral generation"] },
+];
+
+const WHY = [
+  { icon: I.layers, t: "Complete Solution", d: "Other tools only listen OR automate DMs, we do both seamlessly." },
+  { icon: I.sparkles, t: "Smart Personalization", d: "Personalized AI outreach that feels natural, never spammy." },
+  { icon: I.globe, t: "Multi-Platform", d: "Multi-platform support, reach customers wherever they hang out." },
+  { icon: I.clock, t: "Time Savings", d: "Saves you 10+ hours a week in manual work." },
+];
+
+const WHY_STATS: [string, string][] = [
+  ["99.9%", "Uptime Guarantee"],
+  ["24/7", "AI Monitoring"],
+  ["5min", "Setup Time"],
+  ["100+", "Integrations"],
 ];
 
 const TESTIMONIALS = [
-  { name: "Sarah Chen", role: "Marketing Director, TechFlow", quote: "We generated 3x more qualified leads in our first month than we did in the previous quarter of manual outreach.", avatar: "#d08a39" },
-  { name: "Marcus Johnson", role: "Founder, GrowthLab", quote: "The personalization is incredible. Our response rate went from 2% to 23% in just two weeks.", avatar: "#2563eb" },
-  { name: "Emily Rodriguez", role: "Sales Lead, NexusAI", quote: "Finally, a tool that actually works at scale without getting our accounts flagged. Game changer for our sales team.", avatar: "#16a34a" },
+  { q: "We found 20 new leads in the first week, closed 3 deals by week two.", name: "Sarah Johnson", role: "Agency Owner", co: "Growth Marketing Co.", img: `${IMG}/testimonial-sarah-3pdBVnc2.jpg` },
+  { q: "This tool replaced 3 different apps for us. We just watch leads roll in.", name: "Alex Chen", role: "SaaS Founder", co: "TechFlow Solutions", img: `${IMG}/testimonial-alex-Dp-b_tsV.jpg` },
+  { q: "Finally, a solution that actually understands context. Our response rates are through the roof.", name: "Maria Rodriguez", role: "Sales Director", co: "ConsultPro", img: `${IMG}/testimonial-maria--UUT2xFB.jpg` },
 ];
 
-const PRICING = [
-  { name: "Starter", price: "$49", period: "/mo", features: ["500 DMs/month", "2 platforms", "Basic analytics", "Email support"], popular: false },
-  { name: "Growth", price: "$149", period: "/mo", features: ["5,000 DMs/month", "All platforms", "Advanced analytics", "Priority support", "AI learning"], popular: true },
-  { name: "Scale", price: "$499", period: "/mo", features: ["Unlimited DMs", "All platforms", "Custom AI models", "Dedicated manager", "API access"], popular: false },
+const RATING_STATS: [string, string][] = [
+  ["4.9/5", "Customer Rating"],
+  ["500+", "Happy Customers"],
+  ["1M+", "Messages Sent"],
+  ["50K+", "Leads Generated"],
 ];
 
-export default function FormLayout({ app }: { app: AppConfig }) {
-  const { loading, output } = useBrain(app.id);
+const PLANS = [
+  { name: "Starter", price: "$49", per: "/mo", desc: "Perfect for small businesses getting started", feats: ["1 platform", "200 DMs per month", "Basic AI personalization", "Email support", "Analytics dashboard"], cta: "Start Free Trial", popular: false },
+  { name: "Pro", price: "$199", per: "/mo", desc: "Best for growing businesses and agencies", feats: ["Multi-platform support", "1,000 DMs per month", "Advanced targeting", "Priority support", "Advanced analytics", "Custom templates", "Team collaboration"], cta: "Start Free Trial", popular: true },
+  { name: "Agency", price: "Custom", per: "", desc: "Enterprise solution for large agencies", feats: ["Unlimited DMs", "Multi-client support", "Dedicated onboarding", "White-label options", "API access", "Custom integrations", "Dedicated account manager"], cta: "Contact Sales", popular: false },
+];
+
+const FOOT_COLS = [
+  { title: "Product", links: ["Features", "Pricing", "How It Works", "Integrations"] },
+  { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
+  { title: "Support", links: ["Help Center", "Documentation", "API Reference", "Status"] },
+  { title: "Legal", links: ["Privacy Policy", "Terms of Service", "Cookie Policy", "GDPR"] },
+];
+
+/* Component --------------------------------------------------------------- */
+
+export default function ColdDmsLayout({ app }: { app: AppConfig }) {
+  const { output, loading } = useBrain(app.id);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#f5f5f5] overflow-x-hidden">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-white/5 h-16 flex items-center justify-between px-6 md:px-10">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center justify-center w-8 h-8 bg-[#b55830] rounded-lg text-xs font-bold text-white">AI</span>
-          <span className="font-semibold text-lg">LeadGen</span>
-        </div>
-        <div className="hidden md:flex items-center gap-8 text-sm text-gray-400">
-          <a href="#how" className="hover:text-white transition-colors">How It Works</a>
-          <a href="#features" className="hover:text-white transition-colors">Features</a>
-          <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
-          <a href="#testimonials" className="hover:text-white transition-colors">Testimonials</a>
-        </div>
-        <div className="flex items-center gap-4">
-          <a href="#" className="text-sm text-white hover:text-gray-300 transition-colors">Login</a>
-          <a href="#" className="text-sm font-semibold bg-[#b55830] hover:bg-[#b55830]/90 text-[#faf8f4] px-5 py-2.5 rounded-lg transition-colors">Start Free Trial</a>
-        </div>
-      </nav>
+    <div
+      className="min-h-screen overflow-x-hidden bg-[#0a0a0a] text-[#f5f5f5]"
+      style={{ fontFamily: "'Work Sans', ui-sans-serif, system-ui, sans-serif" }}
+    >
+      {/* Fonts (runtime fetch; display serif + body sans) */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@400;500;600;700&display=swap"
+      />
+      <style>{`
+        .fd { font-family: 'Instrument Serif', Georgia, serif; }
+        @keyframes cd-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+        .cd-float { animation: cd-float 6s ease-in-out infinite; }
+        html { scroll-behavior: smooth; }
+      `}</style>
 
-      {/* Hero */}
-      <section className="min-h-screen flex items-center pt-16 relative overflow-hidden bg-[#0a0a0a]">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 py-20 grid md:grid-cols-2 gap-12 items-center w-full">
-          <div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-normal leading-[1.05] mb-6">
-              Find Your Customers <span className="italic text-[#d08a39]">10x Faster</span> with One Click
-            </h1>
-            <p className="text-lg text-gray-400 leading-relaxed mb-8 max-w-lg">
-              Our AI-powered tool listens across Reddit, LinkedIn, Instagram, Twitter, and more. We find your customers, personalize your message, send DMs at scale.
-            </p>
-            <div className="flex items-center gap-4 mb-12">
-              <a href="#" className="bg-[#d08a39] hover:bg-[#d08a39]/90 text-[#201813] font-semibold text-sm px-12 py-3.5 rounded-lg transition-colors">Start Free Trial</a>
-              <a href="#" className="border-2 border-white/20 hover:border-white/40 text-white font-semibold text-sm px-12 py-3.5 rounded-lg transition-colors">Book a Demo</a>
+      {/* Fixed header (h-16, blur, hairline) */}
+      <header className="fixed top-0 inset-x-0 z-50 backdrop-blur-md border-b border-white/10" style={{ backgroundColor: "rgba(10,10,10,0.9)" }}>
+        <div className="mx-auto max-w-[1400px] px-6 flex h-16 items-center justify-between">
+          <a href="#" className="flex items-center gap-3">
+            <span className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl" style={{ backgroundColor: ACCENT }}>
+              AI
+            </span>
+            <span className="fd text-xl tracking-tight text-white">LeadGen</span>
+          </a>
+          <nav className="hidden md:flex gap-8">
+            {NAV_LINKS.map((l) => (
+              <a key={l} href={`#${l.toLowerCase().replace(/\s+/g, "-")}`} className="text-[15px] text-[#f5f5f5] hover:text-white transition-colors">
+                {l}
+              </a>
+            ))}
+          </nav>
+          <div className="flex items-center gap-3">
+            <button className="hidden sm:inline-flex h-11 items-center rounded-[2px] px-6 text-sm font-medium text-white transition-colors hover:bg-white/[0.05]">
+              Login
+            </button>
+            <button
+              className="inline-flex h-9 items-center rounded-[2px] px-4 text-sm font-semibold shadow-md transition-all hover:brightness-95"
+              style={{ backgroundColor: ACCENT, color: INK }}
+            >
+              Start Free Trial
+            </button>
+            <button className="md:hidden p-2 text-white" aria-label="Menu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero — #0a0a0a, min-h-screen */}
+      <section id="hero" className="relative overflow-hidden min-h-screen" style={{ backgroundColor: BAND_DARK }}>
+        <div className="mx-auto max-w-[1400px] px-6 pt-20 pb-16">
+          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <h1 className="fd text-[44px] leading-[48px] lg:text-[72px] lg:leading-[72px] tracking-[-1.8px] text-white">
+                  Find Your Customers <span className="italic" style={{ color: ACCENT }}>10x Faster</span> with One Click
+                </h1>
+                <p className="text-xl leading-7 lg:text-2xl lg:leading-8 text-white/90 max-w-full">
+                  AI LeadGen finds and converts your ideal customers automatically. Stop wasting time on manual prospecting and start growing.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-4">
+                <GoldBtn>Start Free Trial</GoldBtn>
+                <OutlineBtn>Book a Demo</OutlineBtn>
+              </div>
+              <div className="flex flex-wrap gap-x-12 gap-y-6 pt-4">
+                {HERO_STATS.map(([n, l]) => (
+                  <div key={l}>
+                    <div className="text-3xl font-bold text-white">{n}</div>
+                    <div className="text-sm text-white/80 mt-1">{l}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex items-center gap-12">
-              {[
-                { num: "10,000+", label: "Leads Generated" },
-                { num: "500+", label: "Happy Customers" },
-                { num: "95%", label: "Success Rate" },
-              ].map((s, i) => (
-                <div key={i}>
-                  <p className="text-2xl font-bold text-white">{s.num}</p>
-                  <p className="text-xs text-gray-500">{s.label}</p>
+            <div className="relative hidden lg:block">
+              <div className="cd-float">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`${IMG}/hero-illustration-D7D0G3MM.png`} alt="AI LeadGen dashboard illustration" width={652} height={435} className="w-full h-auto rounded-md" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Process — #0a0a0a */}
+      <section id="how-it-works" className="relative overflow-hidden py-24" style={{ backgroundColor: BAND_DARK }}>
+        <div className="mx-auto max-w-[1400px] px-6">
+          <SectionHead title="How It Works" sub="Three simple steps to transform your lead generation and scale your business" />
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-16">
+              {STEPS.map((s) => (
+                <div key={s.n}>
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg" style={{ backgroundColor: ACCENT }}>
+                    {s.n}
+                  </div>
+                  <h3 className="fd text-xl leading-7 text-white mt-8">{s.t}</h3>
+                  <p className="text-white/70 leading-relaxed mt-3">{s.d}</p>
+                </div>
+              ))}
+            </div>
+            <div className="relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`${IMG}/how-it-works-CYDiFHLP.png`} alt="How it works diagram" width={652} height={435} className="w-full h-auto rounded-md" />
+            </div>
+          </div>
+          <div className="text-center mt-[101px]">
+            <OutlineBtn>See It In Action</OutlineBtn>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits / Before vs. After — #0f0f0f */}
+      <section id="features" className="relative overflow-hidden py-24" style={{ backgroundColor: BAND_ALT }}>
+        <div className="mx-auto max-w-[1400px] px-6">
+          <SectionHead title="Before vs. After" sub="See the dramatic transformation AI LeadGen brings to your business" />
+          <div className="grid lg:grid-cols-2 gap-12">
+            <div
+              className="rounded-[2px] border p-10 min-h-[386px]"
+              style={{ backgroundColor: "rgba(239,68,68,0.1)", borderColor: "rgba(239,68,68,0.2)" }}
+            >
+              <div className="text-sm font-semibold uppercase tracking-wider text-red-400 mb-4">Before</div>
+              <h3 className="fd text-4xl text-white mb-6">The old way of doing things</h3>
+              <ul className="space-y-4">
+                {BEFORE_ITEMS.map((t) => (
+                  <li key={t} className="flex items-start gap-4">
+                    <Ico className="w-5 h-5 text-red-400 mt-0.5 shrink-0">{I.x}</Ico>
+                    <span className="text-white/80 leading-relaxed">{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div
+              className="rounded-[2px] border p-10 min-h-[386px]"
+              style={{ backgroundColor: "rgba(84,131,91,0.1)", borderColor: "rgba(84,131,91,0.2)" }}
+            >
+              <div className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: "#8fc29a" }}>
+                After
+              </div>
+              <h3 className="fd text-4xl text-white mb-6">Your business with AI LeadGen</h3>
+              <ul className="space-y-4">
+                {AFTER_ITEMS.map((t) => (
+                  <li key={t} className="flex items-start gap-4">
+                    <Ico className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#8fc29a" }}>{I.check}</Ico>
+                    <span className="text-white/80 leading-relaxed">{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="text-center mt-16 mb-16">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`${IMG}/new-lead-found-CfhNQ6zd.png`} alt="New lead found notification" width={672} height={448} className="inline-block w-[672px] max-w-full h-auto rounded-[2px]" />
+          </div>
+          <div className="grid sm:grid-cols-3 gap-8">
+            {BENEFIT_STATS.map(([n, l]) => (
+              <div key={l} className="rounded-[2px] border border-white/10 bg-white/[0.03] p-8 text-center">
+                <div className="text-4xl font-bold text-white mb-2">{n}</div>
+                <div className="text-white/70">{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Personas — #0f0f0f */}
+      <section id="testimonials-anchor" className="relative overflow-hidden py-24" style={{ backgroundColor: BAND_ALT }}>
+        <div className="mx-auto max-w-[1400px] px-6">
+          <SectionHead title="Who Is This For?" sub="Perfect for professionals who want to scale their outreach and grow their business" subClass="max-w-4xl" />
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {PERSONAS.map((p) => (
+              <div key={p.t} className="rounded-[2px] border border-white/10 bg-white/[0.03] p-8 min-h-[362px] transition-colors hover:bg-white/[0.06]">
+                <div className="flex items-center mb-6">
+                  <div
+                    className="w-11 h-11 rounded-[2px] border flex items-center justify-center"
+                    style={{ borderColor: "rgba(208,138,57,0.4)" }}
+                  >
+                    <Ico className="w-5 h-5" style={{ color: ACCENT }}>{p.icon}</Ico>
+                  </div>
+                </div>
+                <h3 className="fd text-xl text-white mb-3">{p.t}</h3>
+                <p className="text-sm text-white/70 mb-6">{p.d}</p>
+                <ul className="space-y-3">
+                  {p.bullets.map((b) => (
+                    <li key={b} className="flex items-start gap-3">
+                      <Ico className="w-4 h-4 mt-1 shrink-0" style={{ color: ACCENT }}>{I.check}</Ico>
+                      <span className="text-sm text-white/70">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why choose us — #0f0f0f */}
+      <section id="why-us" className="relative overflow-hidden py-24" style={{ backgroundColor: BAND_ALT }}>
+        <div className="mx-auto max-w-[1400px] px-6">
+          <SectionHead title="Why Choose Us?" sub="We're not just another tool, we're your complete AI-powered lead generation solution" />
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative order-2 lg:order-1">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`${IMG}/why-choose-us-zgQB3_Ha.jpg`} alt="Why choose AI LeadGen" width={644} height={429} className="w-full h-auto rounded-md" style={{ filter: "brightness(0.85)" }} />
+              <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(10,10,10,0.55), rgba(208,138,57,0.08))" }} />
+            </div>
+            <div className="order-1 lg:order-2 grid sm:grid-cols-2 gap-8">
+              {WHY.map((w) => (
+                <div key={w.t} className="rounded-[2px] border border-white/10 bg-white/[0.03] p-8 text-center transition-colors hover:bg-white/[0.06]">
+                  <div className="flex justify-center mb-6">
+                    <div
+                      className="w-11 h-11 rounded-[2px] border flex items-center justify-center"
+                      style={{ borderColor: "rgba(208,138,57,0.4)" }}
+                    >
+                      <Ico className="w-5 h-5" style={{ color: ACCENT }}>{w.icon}</Ico>
+                    </div>
+                  </div>
+                  <h3 className="fd text-lg leading-6 text-white mb-3">{w.t}</h3>
+                  <p className="text-sm text-white/70 leading-relaxed">{w.d}</p>
                 </div>
               ))}
             </div>
           </div>
-          <div className="relative">
-            <div className="rounded-2xl overflow-hidden bg-[#1a1520] border border-white/5 p-8">
-              <div className="h-64 md:h-80 rounded-xl bg-gradient-to-br from-[#2a1f3d] to-[#1a1520] flex items-center justify-center relative">
-                <div className="absolute top-4 right-4 bg-[#d08a39]/20 border border-[#d08a39]/30 rounded-lg px-3 py-2 flex items-center gap-2">
-                  <span className="text-xs font-semibold text-[#d08a39]">NEW LEAD FOUND ON REDDIT</span>
-                </div>
-                <div className="absolute bottom-8 right-8 bg-white rounded-xl px-4 py-3 shadow-lg max-w-[200px]">
-                  <p className="text-xs text-gray-800">Hi there! Interested in our tool?</p>
-                </div>
-                <span className="text-6xl">📱</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section id="how" className="py-24 bg-[#0a0a0a]">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-[#d08a39]/10 text-[#d08a39] text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wider">How It Works</span>
-            <h2 className="text-4xl md:text-5xl font-bold">Start generating leads in minutes</h2>
-          </div>
-          <div className="grid md:grid-cols-4 gap-8">
-            {STEPS.map((step, i) => (
-              <div key={i} className="relative">
-                <div className="w-12 h-12 bg-[#d08a39]/10 border border-[#d08a39]/20 rounded-xl flex items-center justify-center text-[#d08a39] font-bold text-lg mb-4">{step.num}</div>
-                <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed">{step.desc}</p>
-                {i < 3 && <div className="hidden md:block absolute top-6 left-full w-full h-px bg-white/10" />}
+          <div className="flex flex-wrap justify-center gap-x-16 gap-y-6 mt-[72px]">
+            {WHY_STATS.map(([n, l]) => (
+              <div key={l} className="text-center">
+                <div className="text-3xl font-bold text-white">{n}</div>
+                <div className="text-sm text-white/70 mt-1">{l}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Benefits */}
-      <section className="py-24 bg-[#0f0f0f]">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Why choose <span className="text-[#d08a39]">AI LeadGen</span>?</h2>
-            <p className="text-gray-400 text-lg">Everything you need to automate your lead generation</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {BENEFITS.map((b, i) => (
-              <div key={i} className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-6 hover:border-[#d08a39]/20 transition-colors">
-                <span className="text-3xl block mb-4">{b.icon}</span>
-                <h3 className="text-lg font-semibold mb-2">{b.title}</h3>
-                <p className="text-sm text-gray-400 leading-relaxed">{b.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section id="features" className="py-24 bg-[#0f0f0f]">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-[#d08a39]/10 text-[#d08a39] text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wider">Features</span>
-            <h2 className="text-4xl md:text-5xl font-bold">Powerful features for smart outreach</h2>
-          </div>
-          <div className="space-y-8">
-            {FEATURES.map((f, i) => (
-              <div key={i} className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-8 grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                  <h3 className="text-xl font-semibold mb-3">{f.title}</h3>
-                  <p className="text-gray-400 leading-relaxed">{f.desc}</p>
-                </div>
-                <div className="h-48 rounded-xl bg-gradient-to-br from-[#2a1f3d] to-[#1a1520] flex items-center justify-center">
-                  <span className="text-4xl">🤖</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section id="testimonials" className="py-24 bg-[#0a0a0a]">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold">Loved by <span className="text-[#d08a39]">500+</span> businesses</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="bg-[#1a1a1a] border border-white/5 rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: t.avatar }}>{t.name[0]}</div>
+      {/* Testimonials — #0a0a0a */}
+      <section id="testimonials" className="relative overflow-hidden py-24" style={{ backgroundColor: BAND_DARK }}>
+        <div className="mx-auto max-w-[1400px] px-6">
+          <SectionHead title="What Our Customers Say" sub="Real results from real businesses who transformed their lead generation" />
+          <div className="grid md:grid-cols-3 gap-8">
+            {TESTIMONIALS.map((t) => (
+              <div key={t.name} className="rounded-[2px] border border-white/10 bg-white/[0.03] p-8 min-h-[318px] flex flex-col transition-colors hover:bg-white/[0.06]">
+                <p className="text-lg text-white/80 leading-relaxed mb-6 flex-1">{'"'}{t.q}{'"'}</p>
+                <div className="border-t border-white/10 pt-6 flex items-center gap-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={t.img} alt={t.name} width={48} height={48} className="w-12 h-12 rounded-full object-cover shrink-0" />
                   <div>
-                    <p className="font-semibold text-sm">{t.name}</p>
-                    <p className="text-xs text-gray-500">{t.role}</p>
+                    <div className="font-semibold text-white">{t.name}</div>
+                    <div className="text-sm text-white/60">{t.role}</div>
+                    <div className="text-sm text-white/60">{t.co}</div>
                   </div>
                 </div>
-                <p className="text-sm text-gray-400 leading-relaxed">&quot;{t.quote}&quot;</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-16 gap-y-6 mt-[76px]">
+            {RATING_STATS.map(([n, l]) => (
+              <div key={l} className="text-center">
+                <div className="text-3xl font-bold text-white">{n}</div>
+                <div className="text-sm text-white/70 mt-1">{l}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-24 bg-[#0f0f0f]">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-[#d08a39]/10 text-[#d08a39] text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wider">Pricing</span>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Simple, transparent pricing</h2>
-            <p className="text-gray-400 text-lg">Start free, scale as you grow</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {PRICING.map((p, i) => (
-              <div key={i} className={`rounded-2xl p-8 ${p.popular ? "bg-[#d08a39]/10 border-2 border-[#d08a39]/30 relative" : "bg-[#1a1a1a] border border-white/5"}`}>
-                {p.popular && <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#d08a39] text-[#201813] text-xs font-bold px-4 py-1 rounded-full">Most Popular</span>}
-                <h3 className="text-lg font-semibold mb-2">{p.name}</h3>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-4xl font-bold">{p.price}</span>
-                  <span className="text-gray-500 text-sm">{p.period}</span>
+      {/* Pricing — #0f0f0f */}
+      <section id="pricing" className="relative overflow-hidden py-24" style={{ backgroundColor: BAND_ALT }}>
+        <div className="mx-auto max-w-[1400px] px-6">
+          <SectionHead title="Simple, Transparent Pricing" sub="Choose the plan that fits your business. All plans include our core AI features." />
+          <div className="grid md:grid-cols-3 gap-8 max-w-[1280px] mx-auto">
+            {PLANS.map((p) => (
+              <div
+                key={p.name}
+                className={`relative rounded-[2px] bg-white/[0.03] p-8 min-h-[579px] transition-colors hover:bg-white/[0.06] ${
+                  p.popular ? "border-2 border-white/30" : "border border-white/10"
+                }`}
+              >
+                {p.popular && (
+                  <span
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full px-4 py-1.5 text-sm font-semibold whitespace-nowrap"
+                    style={{ backgroundColor: ACCENT, color: INK }}
+                  >
+                    Most Popular
+                  </span>
+                )}
+                <h3 className="text-xl font-semibold text-white mb-6">{p.name}</h3>
+                <div className="mb-2">
+                  <span className="text-5xl font-bold text-white">{p.price}</span>
+                  {p.per && <span className="text-white/60 ml-1">{p.per}</span>}
                 </div>
+                <p className="text-sm text-white/70 mb-8">{p.desc}</p>
                 <ul className="space-y-3 mb-8">
-                  {p.features.map((f, j) => (
-                    <li key={j} className="flex items-center gap-2 text-sm text-gray-400">
-                      <span className="text-[#d08a39]">✓</span> {f}
+                  {p.feats.map((f) => (
+                    <li key={f} className="flex items-start gap-3">
+                      <Ico className="w-4 h-4 mt-1 shrink-0" style={{ color: ACCENT }}>{I.check}</Ico>
+                      <span className="text-sm text-white/70">{f}</span>
                     </li>
                   ))}
                 </ul>
-                <a href="#" className={`block text-center font-semibold text-sm py-3 rounded-lg transition-colors ${p.popular ? "bg-[#d08a39] hover:bg-[#d08a39]/90 text-[#201813]" : "border border-white/20 hover:border-white/40 text-white"}`}>
-                  Get Started
-                </a>
+                {p.cta === "Contact Sales" ? (
+                  <button className="w-full h-14 inline-flex items-center justify-center rounded-[2px] border-2 border-white/30 px-10 text-base font-semibold text-white transition-colors hover:bg-white/[0.05]">
+                    {p.cta}
+                  </button>
+                ) : (
+                  <button
+                    className="w-full h-12 inline-flex items-center justify-center rounded-[2px] text-base font-bold shadow-md transition-all hover:brightness-95"
+                    style={{ backgroundColor: ACCENT, color: INK }}
+                  >
+                    {p.cta}
+                  </button>
+                )}
               </div>
             ))}
+          </div>
+          <div className="mt-16 flex justify-center">
+            <div className="rounded-[2px] border border-white/10 bg-white/[0.03] p-8 text-center max-w-[640px] min-h-[206px] flex flex-col justify-center">
+              <div className="text-5xl mb-4">💯</div>
+              <div className="text-xl font-bold text-white mb-2">30-Day Money Back Guarantee</div>
+              <p className="text-sm text-white/70">Try our platform risk-free. If you&apos;re not completely satisfied, get your money back.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 bg-[#080808]">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to 10x your lead generation?</h2>
-          <p className="text-gray-400 text-lg mb-8">Join 500+ businesses already using AI LeadGen to find and convert customers automatically.</p>
-          <a href="#" className="inline-block bg-[#d08a39] hover:bg-[#d08a39]/90 text-[#201813] font-semibold text-sm px-12 py-3.5 rounded-lg transition-colors">See It In Action</a>
+      {/* Final CTA — #080808 */}
+      <section id="cta" className="relative overflow-hidden py-24 text-center" style={{ backgroundColor: "#080808" }}>
+        <div className="mx-auto max-w-[1400px] px-6">
+          <h2 className="fd text-[44px] leading-[48px] lg:text-[72px] lg:leading-[72px] tracking-[-1.8px] text-white max-w-[900px] mx-auto mb-12">
+            Every missed conversation is a missed customer
+          </h2>
+          <p className="text-xl lg:text-2xl text-white/90 leading-relaxed mb-14">
+            Don&apos;t let competitors get there first. Start finding and converting your ideal customers today.
+          </p>
+          <div className="mb-14">
+            <span
+              className="inline-block rounded-[2px] border border-white/10 bg-white/[0.03] px-6 py-7 text-lg font-semibold"
+              style={{ color: ACCENT }}
+            >
+              Limited Time: Get 50% off your first month
+            </span>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4 mb-12">
+            <GoldBtn>Start Free Trial</GoldBtn>
+            <OutlineBtn>Book a Demo</OutlineBtn>
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-base text-white/80">
+            <span>No credit card required</span>
+            <span>Setup in 5 minutes</span>
+            <span>Enterprise-grade security</span>
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#2a231d] py-16 border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-6 md:px-10">
-          <div className="grid md:grid-cols-4 gap-8 mb-12">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="flex items-center justify-center w-8 h-8 bg-[#b55830] rounded-lg text-xs font-bold text-white">AI</span>
-                <span className="font-semibold text-lg">LeadGen</span>
-              </div>
-              <p className="text-sm text-gray-400">Turn conversations into customers automatically with AI-powered lead generation.</p>
+      {/* Footer — warm brown #2a231d */}
+      <footer className="border-t border-white/10 py-16" style={{ backgroundColor: FOOT_BG }}>
+        <div className="mx-auto max-w-[1400px] px-6">
+          <div className="grid gap-8 lg:grid-cols-6 mb-14">
+            <div className="lg:col-span-2 space-y-6">
+              <a href="#" className="flex items-center gap-3">
+                <span className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl" style={{ backgroundColor: ACCENT }}>
+                  AI
+                </span>
+                <span className="text-xl font-bold text-white">LeadGen</span>
+              </a>
+              <p className="text-white/70 leading-relaxed max-w-md">
+                AI LeadGen finds and converts your ideal customers automatically. Stop wasting time on manual prospecting and start growing.
+              </p>
+              <GoldBtn size="sm">Start Free Trial</GoldBtn>
             </div>
-            {[
-              { title: "Product", links: ["Features", "Pricing", "How It Works", "API"] },
-              { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
-              { title: "Support", links: ["Help Center", "Documentation", "Status", "Terms"] },
-            ].map((col, i) => (
-              <div key={i}>
-                <h4 className="font-semibold mb-4">{col.title}</h4>
-                <ul className="space-y-2">
-                  {col.links.map((link, j) => (
-                    <li key={j}><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">{link}</a></li>
+            {FOOT_COLS.map((c) => (
+              <div key={c.title}>
+                <div className="font-semibold text-white mb-4">{c.title}</div>
+                <ul className="space-y-[17px]">
+                  {c.links.map((l) => (
+                    <li key={l}>
+                      <a href="#" className="text-sm text-white/70 hover:text-white transition-colors">
+                        {l}
+                      </a>
+                    </li>
                   ))}
                 </ul>
               </div>
             ))}
           </div>
-          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500">&copy; 2026 AI LeadGen. All rights reserved.</p>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
+          <div className="border-t border-white/10 pt-[34px] flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-white/60">© 2024 AI LeadGen. All rights reserved.</p>
+            <div className="flex gap-6">
+              <a href="#" aria-label="Twitter" className="text-white/60 hover:text-white transition-colors">
+                <Ico className="w-5 h-5">{I.twitter}</Ico>
+              </a>
+              <a href="#" aria-label="LinkedIn" className="text-white/60 hover:text-white transition-colors">
+                <Ico className="w-5 h-5">{I.linkedin}</Ico>
+              </a>
             </div>
           </div>
         </div>
       </footer>
 
-      {/* AI Output Panel */}
+      {/* Factory output panel */}
       {(loading || output) && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#111] border-t border-white/10 p-6 max-h-[40vh] overflow-y-auto">
-          <div className="max-w-3xl mx-auto">
-            <StreamBox app={app} output={output} loading={loading} />
-          </div>
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[min(720px,92vw)]">
+          <StreamBox app={app} loading={loading} output={output} />
         </div>
       )}
     </div>
   );
 }
+
+
+
+
+
+
+
