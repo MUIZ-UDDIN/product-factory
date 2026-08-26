@@ -6,6 +6,7 @@ import {
   Instrument_Serif,
   Inter,
   Playfair_Display,
+  Space_Grotesk,
   Work_Sans,
 } from "next/font/google";
 import "./globals.css";
@@ -48,6 +49,11 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
 });
 
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+});
+
 /* Product 3 (Starbiz) — fonts are self-hosted in public/fonts and declared
    in starbiz.css ("SB Bebas Neue" / "SB Barlow"). next/font is deliberately
    NOT used here: its build-time download of Bebas Neue was persistently
@@ -63,7 +69,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${workSans.variable} ${playfair.variable} ${inter.variable} ${dmSans.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${workSans.variable} ${playfair.variable} ${inter.variable} ${dmSans.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
