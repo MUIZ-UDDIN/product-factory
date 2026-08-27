@@ -323,7 +323,7 @@ body {
   color: var(--text);
 }
 
-/* Product 8 (Sales Automator) — Space Grotesk display over DM Sans body */
+/* Product 8 (Sales Automator) - Space Grotesk display over DM Sans body */
 .font-app-grotesk {
   font-family: var(--font-space-grotesk), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
 }
