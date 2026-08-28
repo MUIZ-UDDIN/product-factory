@@ -34,7 +34,7 @@ const PRIMARY = "hsl(220 91% 32%)";
 function GradButton({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-xl text-white h-16 px-12 rounded-xl border border-white/20 transition-transform duration-300 hover:scale-105 ${className}`}
+      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-sm md:text-xl text-white h-12 md:h-16 px-8 md:px-12 rounded-xl border border-white/20 transition-transform duration-300 hover:scale-105 ${className}`}
       style={{ backgroundImage: "linear-gradient(to right, hsl(16 82% 57%), hsl(16 82% 47%))", boxShadow: SHADOW_GLOW }}
     >
       {children}
@@ -143,10 +143,10 @@ export default function EventsLayout({ app }: { app: AppConfig }) {
       {/* ── HERO ── 1125px */}
       <Band grad={GRAD.hero} veil="bg-black/20" pad="pt-12 min-h-screen flex items-center justify-center">
         <div className="max-w-5xl mx-auto ev-fade">
-          <h1 className="text-5xl md:text-7xl font-bold leading-none mb-8">
+          <h1 className="text-center text-5xl md:text-7xl font-bold leading-none mb-8">
             <span className={CLIP.sun}>Automatically Get Notified of Your Favorite Events</span>
           </h1>
-          <p className="text-lg md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed md:leading-8 mb-12">
+          <p className="text-center text-lg md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed md:leading-8 mb-12">
             Stop wasting hours hunting through Facebook groups, Instagram stories, and random flyers.
             Spotlight finds every tournament, concert, meetup, and community event, then delivers them in
             one clear notification.

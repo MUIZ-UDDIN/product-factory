@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { AppConfig } from "@/lib/registry";
 
 /* Product 3 — Starbiz ("Create Your Own Idol", /3).
@@ -152,6 +153,19 @@ function CheckDot() {
 }
 
 export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onPointerDown(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [menuOpen]);
   return (
     <div className="starbiz-root min-h-screen">
       {/* ---------------- Nav ---------------- */}
@@ -178,13 +192,62 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
             </a>
           ))}
         </div>
-        {/* whitespace-nowrap + px-4 sm:px-8 keep one clean row at 390px
-            (the reference wraps its button labels there); identical ≥640px */}
-        <div className="flex items-center gap-4">
+        {/* Desktop: inline auth (hidden on mobile, replaced by dropdown below) */}
+        <div className="hidden items-center gap-4 md:flex">
           <button className="eyebrow whitespace-nowrap px-2 py-2 text-muted-foreground transition-colors hover:text-foreground">
             Sign In
           </button>
           <button className="btn-primary whitespace-nowrap px-6 py-3">Get Started</button>
+        </div>
+        {/* Mobile: menu button + glass dropdown matching the site theme */}
+        <div className="md:hidden" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-foreground transition-colors hover:bg-white/5"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              {menuOpen ? (
+                <>
+                  <path d="M6 6l12 12" />
+                  <path d="M18 6 6 18" />
+                </>
+              ) : (
+                <>
+                  <path d="M3 6h18" />
+                  <path d="M3 12h18" />
+                  <path d="M3 18h18" />
+                </>
+              )}
+            </svg>
+          </button>
+          {menuOpen && (
+            <div className="absolute inset-x-4 top-[68px] z-50 rounded-2xl border border-white/10 bg-[rgba(10,10,12,0.96)] p-4 shadow-2xl backdrop-blur-xl">
+              <div className="flex flex-col gap-1">
+                {NAV_LINKS.map((link) => (
+                  <a
+                    key={link}
+                    href="#"
+                    onClick={() => setMenuOpen(false)}
+                    className="eyebrow rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                  >
+                    {link}
+                  </a>
+                ))}
+                <div className="my-2 h-px bg-white/10" />
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="eyebrow w-full rounded-lg px-3 py-2 text-left text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                >
+                  Sign In
+                </button>
+                <button onClick={() => setMenuOpen(false)} className="btn-primary mt-2 w-full py-3">
+                  Get Started
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -195,8 +258,8 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
         <div className="hairline-grid absolute inset-0 opacity-60" />
 
         <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-12">
-          <div className="flex flex-col lg:col-span-7">
-            <div className="animate-fade-in-up stagger-1 mb-10 inline-flex w-fit items-center gap-3 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5">
+          <div className="flex flex-col items-center text-center lg:col-span-7 lg:items-start lg:text-left">
+            <div className="animate-fade-in-up stagger-1 mb-10 mx-auto inline-flex w-fit items-center gap-3 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 lg:mx-0">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
               <span className="eyebrow text-primary">{BADGE}</span>
             </div>
@@ -208,11 +271,11 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
               <br />
               <span className="text-gradient-coral">Own Star.</span>
             </h1>
-            <p className="animate-fade-in-up stagger-3 mb-12 max-w-md text-lg leading-relaxed text-muted-foreground">
+            <p className="animate-fade-in-up stagger-3 mb-12 mx-auto max-w-md text-lg leading-relaxed text-muted-foreground lg:mx-0">
               Build an AI K-pop group from scratch. Design members, generate songs, direct music
               videos, run live interviews, then launch to the world.
             </p>
-            <div className="animate-fade-in-up stagger-4 flex flex-wrap gap-5">
+            <div className="animate-fade-in-up stagger-4 flex flex-wrap justify-center gap-5 lg:justify-start">
               <button className="btn-primary px-10 py-5">Enter the Studio</button>
               <button className="btn-ghost-white px-10 py-5">Watch Demo</button>
             </div>
@@ -288,7 +351,7 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
       <section className="relative px-6 py-28 md:px-10">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div className="space-y-4">
+            <div className="space-y-4 text-center md:text-left">
               <p className="eyebrow text-primary">Full Creative Control</p>
               <h2 className="text-display text-5xl md:text-7xl">
                 From idea to debut
@@ -347,12 +410,14 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
         <div className="glow-coral -left-24 top-1/3 h-[420px] w-[420px] bg-accent opacity-20" />
         <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-16 grid-cols-1 lg:grid-cols-2">
           <div className="space-y-8">
-            <p className="eyebrow text-primary">AI Member Design</p>
-            <h2 className="text-display text-6xl md:text-7xl">
-              Every idol.
-              <br />
-              Fully yours.
-            </h2>
+            <div className="space-y-4 text-center md:text-left">
+              <p className="eyebrow text-primary">AI Member Design</p>
+              <h2 className="text-display text-6xl md:text-7xl">
+                Every idol.
+                <br />
+                Fully yours.
+              </h2>
+            </div>
             <p className="max-w-md text-lg leading-relaxed text-muted-foreground">
               Design each member&apos;s appearance, voice, personality, and role. Our AI generates
               photorealistic portraits, unique vocal styles, and complete backstories.
@@ -425,12 +490,14 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
             </div>
           </div>
           <div className="space-y-8">
-            <p className="eyebrow text-primary">Music Video Director</p>
-            <h2 className="text-display text-6xl md:text-7xl">
-              Cinematic.
-              <br />
-              On demand.
-            </h2>
+            <div className="space-y-4 text-center md:text-left">
+              <p className="eyebrow text-primary">Music Video Director</p>
+              <h2 className="text-display text-6xl md:text-7xl">
+                Cinematic.
+                <br />
+                On demand.
+              </h2>
+            </div>
             <p className="max-w-md text-lg leading-relaxed text-muted-foreground">
               Direct studio-quality music videos with AI. Choose sets, lighting, choreography, and
               visual effects. Export in 4K with full broadcast rights.
@@ -523,7 +590,7 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
       {/* ---------------- Testimonials ---------------- */}
       <section className="px-6 pb-28 md:px-10">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-12 space-y-3">
+          <div className="mb-12 space-y-3 text-center md:text-left">
             <p className="eyebrow text-primary">Creators Love It</p>
             <h2 className="text-display text-5xl md:text-6xl">The world is building their stars.</h2>
           </div>
@@ -582,7 +649,7 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
             />
             <span className="text-display text-xl tracking-widest">Starbiz</span>
           </div>
-          <div className="flex flex-wrap gap-8">
+          <div className="flex flex-nowrap justify-center gap-3 whitespace-nowrap text-[11px] md:flex-wrap md:gap-8 md:text-base">
             {FOOTER_LINKS.map((link) => (
               <a
                 key={link}

@@ -217,6 +217,31 @@ body {
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
+@keyframes scrollDot {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(9px); }
+}
+.scroll-dot {
+  animation: scrollDot 1.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes hero-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-3%, -2%, 0) scale(1.08); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes hero-drift-reverse {
+  0%   { transform: translate3d(0, 0, 0) scale(1.05); }
+  50%  { transform: translate3d(3%, 2%, 0) scale(1); }
+  100% { transform: translate3d(0, 0, 0) scale(1.05); }
+}
+@keyframes hero-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(1.05); }
+}
+
 @keyframes app-cursor-blink {
   0%,
   100% {

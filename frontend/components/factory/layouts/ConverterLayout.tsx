@@ -608,8 +608,10 @@ export default function ConverterLayout({ app }: { app: AppConfig }) {
       <section className="bg-gradient-hero py-24">
         <div className="container mx-auto px-6 text-center">
           <div className="mx-auto max-w-3xl space-y-8">
-            <h2 className="font-app-playfair text-4xl font-bold text-white md:text-5xl">
-              Get traveling and don&apos;t worry about money conversion.
+            <h2 className="font-app-playfair font-bold text-white text-3xl md:text-5xl">
+              <span className="block md:inline">Get traveling and</span>{" "}
+              <span className="block text-2xl md:inline md:text-5xl">don&apos;t worry about</span>{" "}
+              <span className="block md:inline">money conversion.</span>
             </h2>
             <p className="text-xl leading-relaxed text-white/90">We&apos;ll email you the TestFlight/Play link when it&apos;s live.</p>
             <a
@@ -624,19 +626,21 @@ export default function ConverterLayout({ app }: { app: AppConfig }) {
       </section>
 
       {/* Footer */}
-      <footer className="border-black/5 bg-white border-t py-16">
+      <footer className="border-black/5 bg-white border-t py-12">
         <div className="container mx-auto px-6">
-          <div className="space-y-8 text-center">
-            <div className="space-y-4">
+          <div className="flex flex-col items-center gap-8 text-center md:flex-row md:items-center md:justify-between md:gap-4 md:text-left">
+            <div className="space-y-1">
               <h3 className="font-app-playfair text-2xl font-bold text-[#0c141d]">SimplyConvert</h3>
               <p className="text-[#67707b]">Ultra-minimal tools for travelers</p>
             </div>
-            <div className="flex flex-wrap justify-center gap-8 text-sm">
-              {["Privacy", "Terms", "Contact"].map((l) => (
-                <a key={l} href="#top" className="text-[#67707b] transition-colors hover:text-[#069eea]">
-                  {l}
-                </a>
-              ))}
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-8">
+              <div className="flex justify-center gap-6 text-sm">
+                {["Privacy", "Terms", "Contact"].map((l) => (
+                  <a key={l} href="#top" className="text-[#67707b] transition-colors hover:text-[#069eea]">
+                    {l}
+                  </a>
+                ))}
+              </div>
             </div>
             <div className="text-sm text-[#67707b]">Travel Converter © 2026</div>
           </div>
