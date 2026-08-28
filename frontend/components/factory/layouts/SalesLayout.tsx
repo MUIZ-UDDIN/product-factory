@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { type AppConfig } from "@/lib/registry";
 import { useBrain } from "@/components/factory/useBrain";
 import StreamBox from "@/components/factory/StreamBox";
@@ -20,9 +20,9 @@ const CORAL = "#e7533c";
 const INK = "#171c26";
 const SUBTLE = "#414958";
 const HAIRLINE = "#e2e9e4";
+const MUTED = "#737b8c"; /* ref secondary text rgb(115,123,140) */
 const MIST = "#eef4ef"; /* hsl(140 30% 94%) tint boxes */
 const PAGE = "#f6f9f7";
-const MOCK_HDR = "#151a17"; /* hsl(140 15% 9%) mockup header bars */
 const ACCENT = "#e4f1e9"; /* hsl(140 30% 92%) accent tints */
 /* Lucide-style inline SVG wrapper (ref uses lucide-react). */
 function Ico({ children, className = "w-5 h-5" }: { children: ReactNode; className?: string }) {
@@ -128,13 +128,33 @@ const I = {
       <path d="M12 6v6l4 2" />
     </>
   ),
+  layers: (
+    <>
+      <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
+      <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
+      <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+    </>
+  ),
+  creditCard: (
+    <>
+      <rect width="20" height="14" x="2" y="5" rx="2" />
+      <line x1="2" x2="22" y1="10" y2="10" />
+    </>
+  ),
+  userCheck: (
+    <>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <polyline points="16 11 18 13 22 9" />
+    </>
+  ),
 };
 /* Coral pill CTA (ref: bg #e7533c, white, radius-full, 14px/600, pad 14x28). */
 function PillBtn({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <a
       href="#"
-      className={`inline-flex h-12 items-center justify-center whitespace-nowrap rounded-full px-7 text-sm font-semibold text-white transition-all hover:brightness-95 ${className}`}
+      className={`inline-flex h-10 items-center justify-center whitespace-nowrap rounded-full px-6 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:brightness-95 ${className}`}
       style={{ backgroundColor: CORAL }}
     >
       {children}
@@ -143,32 +163,154 @@ function PillBtn({ children, className = "" }: { children: ReactNode; className?
 }
 
 /* Emerald kicker (ref: 14px/500, tracking-wide, mb-5). */
-function Kicker({ children, light = false }: { children: ReactNode; light?: boolean }) {
+function Kicker({ children, light = false, color, className = "" }: { children: ReactNode; light?: boolean; color?: string; className?: string }) {
   return (
-    <p className={`mb-5 text-sm font-medium tracking-wide ${light ? "text-white/85" : ""}`} style={light ? undefined : { color: GREEN }}>
+    <p className={`mb-5 text-sm font-medium tracking-wide ${light ? "text-white/85" : ""} ${className}`} style={light ? undefined : { color: color ?? GREEN }}>
       {children}
     </p>
   );
 }
 
-/* Pipeline status chip in the hero mockup. */
-const CHIP: Record<string, { bg: string; fg: string }> = {
-  New: { bg: "#eef2f6", fg: "#4b5563" },
-  Hot: { bg: "#feeceb", fg: "#dc2626" },
-  Sent: { bg: "#e8f1fd", fg: "#2563eb" },
-  Final: { bg: "#fdf3e3", fg: "#b45309" },
-  Won: { bg: "#e4f3ee", fg: GREEN },
-};
-function Chip({ label }: { label: string }) {
-  const c = CHIP[label] ?? CHIP.New;
+const FACES = ["face-1-CkMySBd2.jpg", "face-2-By-iV8KJ.jpg", "face-3-B0gPRRRY.jpg", "face-4-D3CwjnUp.jpg", "face-5-B6X_P5cD.jpg", "face-6-BijCcE6W.jpg"];
+
+/* Scroll-in reveal wrapper (ref: cards/columns animate in with translate/scale). */
+function Reveal({
+  children,
+  from = "up",
+  delay = 0,
+  className = "",
+}: {
+  children: ReactNode;
+  from?: "up" | "small" | "scale" | "scaleSm";
+  delay?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const t0 =
+      from === "up" ? "translateY(24px)" : from === "small" ? "translateY(16px)" : from === "scale" ? "scale(0.9)" : "scale(0.96)";
+    if (reduce || typeof IntersectionObserver === "undefined") {
+      el.style.opacity = "1";
+      return;
+    }
+    el.style.opacity = "0";
+    el.style.transform = t0;
+    el.style.transition = "opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1)";
+    el.style.transitionDelay = delay ? `${delay}ms` : "0ms";
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          el.style.opacity = "1";
+          el.style.transform = "none";
+          el.style.transitionDelay = "0ms";
+        } else {
+          el.style.opacity = "0";
+          el.style.transform = t0;
+          el.style.transitionDelay = delay ? `${delay}ms` : "0ms";
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [from, delay]);
   return (
-    <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold" style={{ backgroundColor: c.bg, color: c.fg }}>
-      {label}
-    </span>
+    <div ref={ref} className={className}>
+      {children}
+    </div>
   );
 }
 
-const FACES = ["face-1-CkMySBd2.jpg", "face-2-By-iV8KJ.jpg", "face-3-B0gPRRRY.jpg", "face-4-D3CwjnUp.jpg", "face-5-B6X_P5cD.jpg", "face-6-BijCcE6W.jpg"];
+/* Scales a fixed-min-width mockup down to fit the container (no h-scroll on mobile). */
+function FitMockup({ minW = 600, children }: { minW?: number; children: ReactNode }) {
+  const wrap = useRef<HTMLDivElement>(null);
+  const inner = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [h, setH] = useState<number | null>(null);
+  useEffect(() => {
+    const w = wrap.current;
+    const i = inner.current;
+    if (!w || !i) return;
+    const update = () => {
+      const cw = w.clientWidth;
+      if (cw >= minW) {
+        setScale(1);
+        setH(null);
+        return;
+      }
+      const s = cw / minW;
+      setScale(s);
+      setH(i.offsetHeight * s);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(w);
+    return () => ro.disconnect();
+  }, [minW]);
+  return (
+    <div ref={wrap} className="w-full" style={h !== null ? { height: h, overflow: "hidden" } : undefined}>
+      <div
+        ref={inner}
+        style={{ minWidth: minW, transform: scale !== 1 ? `scale(${scale})` : undefined, transformOrigin: "top left" }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* Animated "With Sales Automator" bar: number + bar fill drive from the same
+   eased value each frame so they animate in perfect sync. */
+function AnimatedBar({ label, value }: { label: string; value: number }) {
+  const ref = useRef<HTMLLIElement>(null);
+  const [pct, setPct] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setPct(value);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          io.disconnect();
+          const start = performance.now();
+          const dur = 1100;
+          const tick = (now: number) => {
+            const t = Math.min((now - start) / dur, 1);
+            const eased = 1 - Math.pow(1 - t, 3);
+            setPct(eased * value);
+            if (t < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.4 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [value]);
+  return (
+    <li ref={ref}>
+      <div className="mb-1.5 flex items-center justify-between text-sm">
+        <span style={{ color: SUBTLE }}>{label}</span>
+        <span className="font-app-grotesk font-bold" style={{ color: GREEN }}>
+          {Math.round(pct)}%
+        </span>
+      </div>
+      <div className="h-2 rounded-full bg-white">
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: GREEN }} />
+      </div>
+    </li>
+  );
+}
+
+
 
 /* Overlapping avatar row (hero social proof / CTA band). */
 function AvatarStack({ faces, size = 28 }: { faces: string[]; size?: number }) {
@@ -189,91 +331,182 @@ function AvatarStack({ faces, size = 28 }: { faces: string[]; size?: number }) {
 }
 /* Fixed frosted nav: brand left, Book a Meeting pill right (ref h=65). */
 function Nav() {
+  const [navOpen, setNavOpen] = useState(false);
   return (
     <nav
       className="fixed inset-x-0 top-0 z-40 border-b backdrop-blur-md"
       style={{ backgroundColor: "rgba(246,249,247,0.8)", borderColor: HAIRLINE }}
     >
-      <div className="mx-auto flex h-[65px] max-w-7xl items-center justify-between px-4 sm:px-6">
-        <span className="font-app-grotesk text-lg font-bold" style={{ color: INK }}>
-          Sales Automator
-        </span>
-        <PillBtn className="h-10 px-5 text-[13px]">Book a Meeting</PillBtn>
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <a href="/" className="flex items-center gap-2.5">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="32" height="32" rx="6" fill={GREEN} />
+            <path d="M8 22L14 10L18 18L24 10" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="24" cy="10" r="2" fill={CORAL} />
+          </svg>
+          <span className="font-app-grotesk text-lg font-bold" style={{ color: INK }}>
+            Sales Automator
+          </span>
+        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href="#"
+            className="hidden items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:brightness-95 md:inline-flex"
+            style={{ backgroundColor: CORAL }}
+          >
+            Book a Meeting
+          </a>
+          <button
+            className="p-2 md:hidden"
+            aria-label="Toggle menu"
+            aria-expanded={navOpen}
+            onClick={() => setNavOpen((v) => !v)}
+            style={{ color: INK }}
+          >
+            {navOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="18" y2="18" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
+      {navOpen && (
+        <div className="border-t px-4 py-4 sm:px-6 md:hidden" style={{ backgroundColor: "rgba(246,249,247,0.97)", borderColor: HAIRLINE }}>
+          <a
+            href="#"
+            onClick={() => setNavOpen(false)}
+            className="flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:brightness-95"
+            style={{ backgroundColor: CORAL }}
+          >
+            Book a Meeting
+          </a>
+        </div>
+      )}
     </nav>
   );
 }
 
 /* Pipeline stage + deal rows data (verbatim from ref mockup). */
 const STAGES = [
-  ["Prospecting", "12 deals"],
-  ["Qualified", "8 deals"],
-  ["Proposal", "5 deals"],
-  ["Negotiation", "3 deals"],
-  ["Closed Won", "2 deals"],
+  ["Prospecting", "12 deals", "#e7ece9"],
+  ["Qualified", "8 deals", "rgba(12,125,99,0.3)"],
+  ["Proposal", "5 deals", "rgba(12,125,99,0.5)"],
+  ["Negotiation", "3 deals", "rgba(12,125,99,0.7)"],
+  ["Closed Won", "2 deals", GREEN],
 ];
-const DEALS = [
-  { f: FACES[5], name: "Stark Industries", amt: "$24,000", st: "New" },
-  { f: FACES[1], name: "Acme Corp", amt: "$48,000", st: "Hot" },
-  { f: FACES[3], name: "Initech", amt: "$67,200", st: "Sent" },
-  { f: FACES[0], name: "Umbrella Corp.", amt: "$89,000", st: "Final" },
-  { f: FACES[4], name: "Wonka Ltd", amt: "$73,400", st: "Won" },
+const PIPELINE_COLS = [
+  [
+    { f: FACES[3], n: "Stark Industries", a: "$24,000", chip: ["New", "#dbeafe", "#1d4ed8"] },
+    { f: FACES[4], n: "Wayne Corp", a: "$18,500", chip: ["Replied", "#dcfce7", "#15803d"] },
+    { f: FACES[5], n: "Oscorp", a: "$41,000", chip: null },
+  ],
+  [
+    { f: FACES[0], n: "Acme Corp", a: "$48,000", chip: ["Hot", "#fee2e2", "#b91c1c"] },
+    { f: FACES[3], n: "Globex Inc", a: "$32,500", chip: null },
+  ],
+  [
+    { f: FACES[4], n: "Initech", a: "$67,200", chip: ["Sent", "#fef3c7", "#b45309"] },
+    { f: FACES[5], n: "Cyberdyne", a: "$55,000", chip: null },
+  ],
+  [
+    { f: FACES[0], n: "Umbrella Co", a: "$89,000", chip: ["Final", "#ede9fe", "#7e22ce"] },
+  ],
+  [
+    { f: FACES[3], n: "Wonka Ltd", a: "$73,400", chip: ["Won", "#dcfce7", "#15803d"] },
+  ],
 ];
-const METRICS = ["Pipeline Value\n$448,600", "Win Rate\n34%", "Avg Cycle\n18 days"];
+const METRICS: Array<[string, string, boolean]> = [
+  ["Pipeline Value", "$448,600", false],
+  ["Win Rate", "34%", true],
+  ["Avg Cycle", "18 days", false],
+];
+/* Brand logo mark (ref: green rounded square + chart stroke + coral dot). */
+function LogoMark({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="32" height="32" rx="6" fill={GREEN} />
+      <path d="M8 22L14 10L18 18L24 10" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="24" cy="10" r="2" fill={CORAL} />
+    </svg>
+  );
+}
 
 function HeroMockup() {
   return (
-    <div className="overflow-hidden rounded-xl border bg-white shadow-[0_24px_60px_-24px_rgba(12,125,99,0.28)]" style={{ borderColor: HAIRLINE }}>
-      {/* dark header bar */}
-      <div className="flex items-center justify-between px-5 py-3" style={{ backgroundColor: MOCK_HDR }}>
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md text-[11px] font-bold text-white" style={{ backgroundColor: GREEN }}>
-            SA
-          </span>
-          <span>
-            <span className="block text-[13px] font-semibold leading-tight text-white">Sales Automator</span>
-            <span className="block text-[11px] leading-tight text-white/55">Analytics</span>
-          </span>
+    <div className="overflow-hidden rounded-2xl border bg-white shadow-2xl" style={{ borderColor: HAIRLINE, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.08)" }}>
+      {/* header bar */}
+      <div className="flex items-center justify-between border-b px-5 py-3" style={{ backgroundColor: "hsl(140,15%,98%)", borderColor: HAIRLINE }}>
+        <div className="flex items-center gap-3">
+          <LogoMark />
+          <span className="text-xs font-semibold" style={{ color: INK }}>Sales Automator</span>
+          <span className="text-[10px]" style={{ color: SUBTLE }}>Pipeline</span>
+          <span className="rounded border px-1.5 py-0.5 text-[10px]" style={{ borderColor: HAIRLINE, color: SUBTLE }}>Q1 2026</span>
         </div>
-        <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[11px] text-white/80">This Quarter</span>
+        <div className="flex items-center gap-2">
+          <div className="flex -space-x-1.5">
+            {[FACES[3], FACES[4], FACES[5]].map((f) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={f} src={`${IMG}/${f}`} alt="" className="h-5 w-5 rounded-full border border-white object-cover" />
+            ))}
+          </div>
+          <div className="h-6 w-6 rounded-full" style={{ backgroundColor: MIST }} />
+        </div>
       </div>
 
-      <div className="space-y-3 p-5">
-        {/* pipeline stages */}
-        <div className="grid grid-cols-5 gap-2">
-          {STAGES.map(([label, n]) => (
-            <div key={label} className="rounded-lg px-1 py-2 text-center" style={{ backgroundColor: PAGE }}>
-              <p className="text-[10px] font-medium" style={{ color: SUBTLE }}>{label}</p>
-              <p className="text-[13px] font-bold" style={{ color: INK }}>{n.split(" ")[0]}</p>
-              <p className="text-[9px]" style={{ color: SUBTLE }}>deals</p>
+      <div className="p-4">
+        {/* stage bars */}
+        <div className="mb-3 grid grid-cols-5 gap-2">
+          {STAGES.map(([label, n, bar]) => (
+            <div key={label} className="text-center">
+              <div className="mb-1 text-[10px] font-semibold" style={{ color: INK }}>{label}</div>
+              <div className="h-1 rounded-full" style={{ backgroundColor: bar }} />
+              <div className="mt-1 text-[9px]" style={{ color: SUBTLE }}>{n}</div>
             </div>
           ))}
         </div>
-        {/* deal rows */}
-        <div className="space-y-2">
-          {DEALS.map((d) => (
-            <div key={d.name} className="flex items-center gap-3 rounded-lg border px-3 py-2" style={{ borderColor: HAIRLINE }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`${IMG}/${d.f}`} alt="" className="h-5 w-5 rounded-full object-cover" />
-              <span className="min-w-0 flex-1 truncate text-[13px] font-semibold" style={{ color: INK }}>{d.name}</span>
-              <span className="text-[13px] font-semibold tabular-nums" style={{ color: INK }}>{d.amt}</span>
-              <Chip label={d.st} />
+        {/* deal columns */}
+        <div className="mt-2 grid grid-cols-5 gap-2">
+          {PIPELINE_COLS.map((col, i) => (
+            <div key={i} className="space-y-2">
+              {col.map((d) => (
+                <div key={d.n} className="rounded-lg border bg-white p-2.5" style={{ borderColor: HAIRLINE }}>
+                  <div className="mb-1.5 flex items-center gap-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`${IMG}/${d.f}`} alt="" className="h-5 w-5 shrink-0 rounded-full object-cover" />
+                    <span className="truncate text-[10px] font-semibold" style={{ color: INK }}>{d.n}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold" style={{ color: INK }}>{d.a}</span>
+                    {d.chip && (
+                      <span className="rounded-full px-1.5 py-0.5 text-[8px] font-medium" style={{ backgroundColor: d.chip[1], color: d.chip[2] }}>{d.chip[0]}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           ))}
         </div>
-        {/* metrics footer */}
-        <div className="grid grid-cols-3 gap-2 pt-1">
-          {METRICS.map((m) => {
-            const [l, v] = m.split("\n");
-            return (
-              <div key={l} className="rounded-lg px-2 py-2 text-center" style={{ backgroundColor: PAGE }}>
-                <p className="text-[10px]" style={{ color: SUBTLE }}>{l}</p>
-                <p className="font-app-grotesk text-[15px] font-bold" style={{ color: INK }}>{v}</p>
-              </div>
-            );
-          })}
+      </div>
+
+      {/* metrics footer */}
+      <div className="flex items-center justify-between border-t px-5 py-3" style={{ backgroundColor: "hsl(140,15%,98%)", borderColor: HAIRLINE }}>
+        <div className="flex items-center gap-4">
+          {METRICS.map(([l, v, green]) => (
+            <div key={l}>
+              <div className="text-[9px] uppercase tracking-wide" style={{ color: SUBTLE }}>{l}</div>
+              <div className="text-sm font-bold" style={{ color: green ? GREEN : INK }}>{v}</div>
+            </div>
+          ))}
         </div>
-        <p className="pt-0.5 text-right text-[10px]" style={{ color: SUBTLE }}>Updated 2 min ago</p>
+        <div className="text-[9px]" style={{ color: SUBTLE }}>Updated 2 min ago</div>
       </div>
     </div>
   );
@@ -283,50 +516,78 @@ function HeroBand() {
     <section className="relative overflow-hidden pt-28 pb-16 lg:pb-24" style={{ background: "linear-gradient(160deg,#eef6f0 0%,#f6f9f7 42%,#f6f9f7 100%)" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
-          <div className="pt-8">
-            <Kicker>Stop stitching tools together</Kicker>
-            <h1 className="font-app-grotesk text-[40px] leading-[1.05] font-bold tracking-[-1.4px] sm:text-[56px]" style={{ color: INK }}>
-              Tired of connecting 10 tools that each do one thing?
+          <Reveal from="up" className="pt-8">
+            <Kicker className="text-center sm:text-left">Stop stitching tools together</Kicker>
+            <h1 className="mb-6 text-center font-app-grotesk text-4xl font-bold leading-[1.0] tracking-[-1.4px] sm:text-left sm:text-5xl lg:text-[3.5rem]" style={{ color: INK }}>
+              Tired of connecting
+              <br />10 tools that each do
+              <br />
+              <span
+                style={{
+                  background: "linear-gradient(135deg, #0c7d63, #1b987b)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                }}
+              >
+                one thing?
+              </span>
             </h1>
-            <p className="mt-6 max-w-xl text-[18px] leading-[1.63] xl:max-w-lg" style={{ color: SUBTLE }}>
+            <p className="mb-8 max-w-md text-center text-lg leading-relaxed sm:text-left" style={{ color: SUBTLE }}>
               Other platforms handle a piece of sales. Ours runs the whole thing. Prospecting, calls, follow-ups, CRM, reporting.
               Set it up, tweak it to your playbook, and watch it bring in revenue. Fully customizable when you want more control.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <PillBtn>Book a Demo</PillBtn>
+            <div className="mb-8 flex flex-wrap justify-center gap-3 sm:justify-start">
+              <PillBtn className="shadow-[0_8px_24px_-8px_rgba(231,83,60,0.4)] hover:-translate-y-0.5">Book a Demo</PillBtn>
               <a
                 href="#"
-                className="inline-flex h-12 items-center justify-center rounded-full border bg-transparent px-7 text-sm font-semibold transition-colors hover:bg-white/60"
+                className="inline-flex h-10 items-center justify-center rounded-full border bg-transparent px-6 text-sm font-semibold transition-colors hover:bg-white/60"
                 style={{ borderColor: HAIRLINE, color: INK }}
               >
                 Watch it work
               </a>
             </div>
-            <div className="mt-8 flex items-center gap-3">
-              <AvatarStack faces={[FACES[4], FACES[5], FACES[3]]} />
-              <p className="text-sm" style={{ color: SUBTLE }}>200+ revenue teams already onboard</p>
+            <div className="flex items-center justify-center gap-3 sm:justify-start">
+              <AvatarStack faces={[FACES[0], FACES[1], FACES[4]]} size={32} />
+              <p className="text-xs" style={{ color: SUBTLE }}>
+                <span className="font-semibold" style={{ color: INK }}>200+</span> revenue teams already onboard
+              </p>
             </div>
-          </div>
+          </Reveal>
           <div className="hidden lg:block">
             <HeroMockup />
           </div>
         </div>
+        <Reveal from="scaleSm">
+          <div className="mt-10 lg:hidden">
+            <FitMockup minW={600}>
+              <HeroMockup />
+            </FitMockup>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-const LOGOS = ["salesforce", "HubSpot", "Slack", "Notion", "Zoom", "Linear"];
+const LOGOS: Array<[string, number]> = [
+  ["salesforce", 120],
+  ["HubSpot", 90],
+  ["Slack", 60],
+  ["Notion", 70],
+  ["Zoom", 60],
+  ["Linear", 65],
+];
 const TRUST = [
   {
     quote: "\"We cut our sales admin time by 62% in the first month. Our reps went from 4 hours of CRM work per day to about 45 minutes.\"",
-    face: FACES[3],
+    face: FACES[0],
     name: "Marcus Chen",
     role: "VP Revenue, CloudStack",
   },
   {
     quote: "\"The AI agent booked 23 qualified meetings in its first week. Our SDR team thought we were joking when we showed them the numbers.\"",
-    face: FACES[5],
+    face: FACES[1],
     name: "Priya Sharma",
     role: "Head of Sales Ops, Relay",
   },
@@ -340,33 +601,42 @@ const TRUST = [
 
 function TrustedBand() {
   return (
-    <section className="border-t py-16 lg:py-[84px]" style={{ borderColor: HAIRLINE }}>
+    <section className="border-t py-16 lg:py-20" style={{ borderColor: HAIRLINE }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <p className="mb-8 text-center text-sm" style={{ color: SUBTLE }}>Trusted by revenue teams at</p>
-        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 lg:justify-between">
-          {LOGOS.map((l) => (
-            <span
-              key={l}
-              className={`text-lg ${l === "salesforce" ? "font-bold lowercase tracking-tight" : "font-semibold"}`}
-              style={{ color: INK, opacity: 0.65 }}
-            >
-              {l}
-            </span>
-          ))}
+        <div className="mb-14 text-center">
+          <p className="mb-8 text-xs font-medium uppercase tracking-widest" style={{ color: SUBTLE }}>
+            Trusted by revenue teams at
+          </p>
+          <Reveal from="up">
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5" style={{ color: INK }}>
+              {LOGOS.map(([name, w]) => (
+                <svg key={name} viewBox={`0 0 ${w} 24`} className="h-5 w-auto opacity-40 transition-opacity duration-300 hover:opacity-60" aria-hidden="true">
+                  <text x="0" y="18" fontFamily="'Space Grotesk', sans-serif" fontSize="16" fontWeight="700" fill="currentColor">
+                    {name}
+                  </text>
+                </svg>
+              ))}
+            </div>
+          </Reveal>
         </div>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {TRUST.map((t) => (
-            <figure key={t.name} className="rounded-xl border p-6" style={{ backgroundColor: "#fff", borderColor: HAIRLINE }}>
-              <blockquote className="text-[15px] leading-relaxed" style={{ color: INK }}>{t.quote}</blockquote>
-              <figcaption className="mt-5 flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`${IMG}/${t.face}`} alt={t.name} className="h-10 w-10 rounded-full object-cover" />
-                <span>
-                  <span className="block text-sm font-semibold" style={{ color: INK }}>{t.name}</span>
-                  <span className="block text-[13px]" style={{ color: SUBTLE }}>{t.role}</span>
-                </span>
-              </figcaption>
-            </figure>
+        <div className="grid gap-6 md:grid-cols-3">
+          {TRUST.map((t, i) => (
+            <Reveal key={t.name} from="up" delay={i * 100}>
+              <figure
+                className="h-full rounded-2xl border bg-white p-7 transition-shadow duration-300 hover:shadow-lg"
+                style={{ borderColor: HAIRLINE }}
+              >
+                <blockquote className="mb-6 text-[15px] leading-relaxed" style={{ color: INK }}>{t.quote}</blockquote>
+                <figcaption className="flex items-center gap-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`${IMG}/${t.face}`} alt={t.name} className="h-10 w-10 rounded-full object-cover" />
+                  <span>
+                    <span className="block text-sm font-semibold" style={{ color: INK }}>{t.name}</span>
+                    <span className="block text-xs" style={{ color: SUBTLE }}>{t.role}</span>
+                  </span>
+                </figcaption>
+              </figure>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -384,7 +654,7 @@ const WITHOUT = [
   "Deals go dark because follow-ups slip through the cracks",
   "New hires take 4+ months to ramp because the process lives in people's heads",
 ];
-const WITH = [
+const WITH: Array<[string, number]> = [
   ["Time spent selling", 85],
   ["Pipeline accuracy", 95],
   ["Follow-ups completed on time", 92],
@@ -394,7 +664,7 @@ function ProblemBand() {
   return (
     <section className="py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <h2 className="mx-auto max-w-3xl text-center font-app-grotesk text-[32px] leading-[1.12] font-bold lg:text-[44px]" style={{ color: INK }}>
+        <h2 className="mx-auto max-w-3xl text-center font-app-grotesk text-3xl font-bold leading-[1.11] sm:text-4xl" style={{ color: INK }}>
           One tool for prospecting. Another for calls. Another for CRM. None of them talk.
         </h2>
         <p className="mx-auto mt-6 max-w-2xl text-center text-lg" style={{ color: SUBTLE }}>
@@ -402,41 +672,39 @@ function ProblemBand() {
           What if one platform just did all of it?
         </p>
         <div className="mx-auto mt-[67px] grid max-w-4xl grid-cols-1 gap-8 sm:grid-cols-3">
-          {PROB_STATS.map(([v, l]) => (
-            <div key={v} className="text-center">
-              <p className="font-app-grotesk text-[44px] font-bold leading-none" style={{ color: GREEN }}>{v}</p>
-              <p className="mt-2 text-sm leading-relaxed" style={{ color: SUBTLE }}>{l}</p>
-            </div>
+          {PROB_STATS.map(([v, l], i) => (
+            <Reveal key={v} from="small" delay={i * 80}>
+              <div className="text-center">
+                <p className="font-app-grotesk text-[44px] font-bold leading-none" style={{ color: GREEN }}>{v}</p>
+                <p className="mt-2 text-sm leading-relaxed" style={{ color: SUBTLE }}>{l}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
         <div className="mt-20 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-xl border bg-white p-8" style={{ borderColor: HAIRLINE }}>
-            <p className="mb-5 font-app-grotesk text-lg font-semibold" style={{ color: INK }}>Without Sales Automator</p>
-            <ul className="space-y-4">
-              {WITHOUT.map((w) => (
-                <li key={w} className="flex gap-3 text-[15px] leading-relaxed" style={{ color: SUBTLE }}>
-                  <span className="mt-0.5 shrink-0" style={{ color: "#e05252" }}><Ico className="h-4 w-4">{I.x}</Ico></span>
-                  {w}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-xl border p-8" style={{ backgroundColor: MIST, borderColor: HAIRLINE }}>
-            <p className="mb-5 font-app-grotesk text-lg font-semibold" style={{ color: INK }}>With Sales Automator</p>
-            <ul className="space-y-5">
-              {WITH.map(([l, v]) => (
-                <li key={String(l)}>
-                  <div className="mb-1.5 flex items-center justify-between text-sm">
-                    <span style={{ color: SUBTLE }}>{l}</span>
-                    <span className="font-app-grotesk font-bold" style={{ color: GREEN }}>{v}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-white">
-                    <div className="h-full rounded-full" style={{ width: `${v}%`, backgroundColor: GREEN }} />
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Reveal from="small">
+            <div className="h-full rounded-xl border bg-white p-8 transition-shadow duration-300 hover:shadow-md" style={{ borderColor: HAIRLINE }}>
+              <p className="mb-5 font-app-grotesk text-lg font-semibold" style={{ color: INK }}>Without Sales Automator</p>
+              <ul className="space-y-4">
+                {WITHOUT.map((w) => (
+                  <li key={w} className="flex gap-3 text-[15px] leading-relaxed" style={{ color: SUBTLE }}>
+                    <span className="mt-0.5 shrink-0" style={{ color: "#e05252" }}><Ico className="h-4 w-4">{I.x}</Ico></span>
+                    {w}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
+          <Reveal from="small" delay={120}>
+            <div className="h-full rounded-xl border p-8 transition-shadow duration-300 hover:shadow-md" style={{ backgroundColor: MIST, borderColor: HAIRLINE }}>
+              <p className="mb-5 font-app-grotesk text-lg font-semibold" style={{ color: INK }}>With Sales Automator</p>
+              <ul className="space-y-5">
+                {WITH.map(([l, v]) => (
+                  <AnimatedBar key={String(l)} label={l} value={v} />
+                ))}
+              </ul>
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -448,7 +716,7 @@ const KPIS = [
   { l: "Win Rate", v: "34%", d: "+3%", up: true },
   { l: "Avg Deal Size", v: "$9.6K", d: "-2%", up: false },
 ];
-const BARS = [42, 55, 48, 62, 57, 70, 64, 78, 72, 86, 80, 95];
+const BARS = [37.2, 44.7, 40.4, 59.6, 64.9, 51.1, 76.6, 72.3, 85.1, 79.8, 93.6, 100];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const PERFORMERS = [
   { f: FACES[0], n: "Alex Rivera", deals: "14 deals", amt: "$142K", pct: "112%" },
@@ -468,77 +736,100 @@ function ResultsBand() {
   return (
     <section className="py-20 lg:py-28" style={{ backgroundColor: "#fff" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid gap-12 lg:grid-cols-2">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Mockup card */}
-          <div className="order-2 overflow-x-auto lg:order-1">
-            <div className="min-w-[520px] rounded-2xl border p-5 shadow-[0_30px_70px_-35px_rgba(23,28,38,0.25)]" style={{ borderColor: HAIRLINE, backgroundColor: "#fff" }}>
-              <div className="mb-4 flex items-center justify-between rounded-lg px-3 py-2.5" style={{ backgroundColor: MIST }}>
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-md text-[11px] font-bold text-white" style={{ backgroundColor: GREEN }}>SA</span>
-                  <span>
-                    <span className="block text-[13px] font-semibold leading-tight" style={{ color: INK }}>Sales Automator</span>
-                    <span className="block text-[11px] leading-tight" style={{ color: SUBTLE }}>Analytics</span>
-                  </span>
+          <Reveal from="scaleSm" className="order-2 min-w-0 lg:order-1">
+          <FitMockup minW={500}>
+              <div className="overflow-hidden rounded-2xl border bg-white shadow-2xl" style={{ borderColor: HAIRLINE, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.08)" }}>
+                {/* header */}
+                <div className="flex items-center justify-between border-b px-5 py-3" style={{ backgroundColor: "hsl(140,15%,98%)", borderColor: HAIRLINE }}>
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-md text-[10px] font-bold text-white" style={{ backgroundColor: GREEN }}>SA</span>
+                    <span className="text-xs font-semibold" style={{ color: INK }}>Analytics</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded border px-2 py-0.5 text-[10px]" style={{ borderColor: HAIRLINE, color: SUBTLE }}>This Quarter</span>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={`${IMG}/${FACES[2]}`} alt="" className="h-5 w-5 rounded-full object-cover" />
+                  </div>
                 </div>
-                <span className="rounded-full border bg-white px-2.5 py-1 text-[11px]" style={{ borderColor: HAIRLINE, color: SUBTLE }}>This Quarter</span>
-              </div>
-              <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {KPIS.map((k) => (
-                  <div key={k.l} className="rounded-lg border p-2.5" style={{ borderColor: HAIRLINE }}>
-                    <p className="text-[9px] uppercase tracking-wider" style={{ color: SUBTLE }}>{k.l}</p>
-                    <div className="mt-0.5 flex items-baseline gap-1.5">
-                      <p className="font-app-grotesk text-[15px] font-bold" style={{ color: INK }}>{k.v}</p>
-                      <p className="text-[9px] font-semibold" style={{ color: k.up ? GREEN : "#dc2626" }}>{k.d}</p>
+                <div className="p-5">
+                  {/* KPIs */}
+                  <div className="mb-6 grid grid-cols-4 gap-4">
+                    {KPIS.map((k) => (
+                      <div key={k.l} className="rounded-lg border p-3" style={{ borderColor: HAIRLINE }}>
+                        <div className="text-[9px] uppercase tracking-wide" style={{ color: SUBTLE }}>{k.l}</div>
+                        <div className="mt-0.5 font-app-grotesk text-lg font-bold" style={{ color: INK }}>{k.v}</div>
+                        <div className="text-[10px] font-semibold" style={{ color: k.up ? GREEN : "#dc2626" }}>{k.d}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Revenue trend */}
+                  <div className="mb-5 rounded-lg border p-4" style={{ borderColor: HAIRLINE }}>
+                    <p className="mb-3 text-[10px] font-semibold" style={{ color: INK }}>Monthly Revenue Trend</p>
+                    <div className="flex h-24 items-end gap-1.5">
+                      {BARS.map((b, i) => (
+                        <div key={i} className="flex flex-1 flex-col items-center gap-1">
+                          <div className="w-full rounded-sm" style={{ height: `${b}%`, backgroundColor: "rgba(12,125,99,0.7)" }} />
+                          <span className="text-[7px]" style={{ color: SUBTLE }}>{MONTHS[i]}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="mb-4 rounded-lg border p-3.5" style={{ borderColor: HAIRLINE }}>
-                <p className="mb-3 text-xs font-semibold" style={{ color: INK }}>Monthly Revenue Trend</p>
-                <div className="flex h-24 items-end gap-1.5">
-                  {BARS.map((b, i) => (
-                    <div key={i} className="flex-1 rounded-t-[3px]" style={{ height: `${b}%`, backgroundColor: i === BARS.length - 1 ? GREEN : "#bfe0d2" }} />
-                  ))}
+                  {/* Top performers */}
+                  <div className="overflow-hidden rounded-lg border" style={{ borderColor: HAIRLINE }}>
+                    <div className="px-3 py-2 text-[9px] font-semibold uppercase tracking-wide" style={{ backgroundColor: "hsl(140,15%,98%)", color: SUBTLE }}>Top Performers</div>
+                    {PERFORMERS.map((p, i) => (
+                      <div
+                        key={p.n}
+                        className="flex items-center justify-between px-3 py-2.5"
+                        style={{ borderColor: HAIRLINE, borderBottom: i === PERFORMERS.length - 1 ? "none" : `1px solid ${HAIRLINE}` }}
+                      >
+                        <div className="flex items-center gap-2">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={`${IMG}/${p.f}`} alt="" className="h-5 w-5 rounded-full object-cover" />
+                          <span className="text-[10px] font-semibold" style={{ color: INK }}>{p.n}</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="text-[10px]" style={{ color: SUBTLE }}>{p.deals}</span>
+                          <span className="text-[10px] font-semibold" style={{ color: INK }}>{p.amt}</span>
+                          <div className="h-1.5 w-12 overflow-hidden rounded-full" style={{ backgroundColor: MIST }}>
+                            <div className="h-full rounded-full" style={{ width: p.pct, backgroundColor: GREEN }} />
+                          </div>
+                          <span className="text-[9px]" style={{ color: SUBTLE }}>{p.pct}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="mt-1.5 flex justify-between text-[8px]" style={{ color: SUBTLE }}>
-                  {MONTHS.map((m) => <span key={m}>{m}</span>)}
-                </div>
               </div>
-              <div className="rounded-lg border p-3.5" style={{ borderColor: HAIRLINE }}>
-                <p className="mb-2.5 text-xs font-semibold" style={{ color: INK }}>Top Performers</p>
-                <div className="space-y-4">
-                  {PERFORMERS.map((p) => (
-                    <div key={p.n} className="flex items-center gap-2.5">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={`${IMG}/${p.f}`} alt="" className="h-5 w-5 rounded-full object-cover" />
-                      <span className="min-w-0 flex-1 truncate text-[12px] font-medium" style={{ color: INK }}>{p.n}</span>
-                      <span className="text-right text-[10px] leading-tight" style={{ color: SUBTLE }}>{p.deals}<br />{p.amt}</span>
-                      <span className="rounded-full px-1.5 py-0.5 text-[10px] font-bold" style={{ backgroundColor: "#e4f3ee", color: GREEN }}>{p.pct}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+            </FitMockup>
+          </Reveal>
           {/* Text column */}
-          <div className="order-1 self-center lg:order-2">
+          <Reveal from="up" className="order-1 lg:order-2">
             <Kicker>Results</Kicker>
-            <h2 className="mt-3 font-app-grotesk text-[32px] font-bold leading-[1.12] lg:text-[44px]" style={{ color: INK }}>
+            <h2 className="mb-6 font-app-grotesk text-3xl font-bold leading-[1.11] sm:text-4xl" style={{ color: INK }}>
               Less guesswork.<br />More closed deals.
             </h2>
-            <p className="mt-8 max-w-md text-[15px] leading-relaxed" style={{ color: SUBTLE }}>
-              &ldquo;We cut admin time by 62% in the first month. Our reps went from 4 hours of CRM work per day to 45 minutes.&rdquo;
-            </p>
-            <p className="mt-3 text-sm font-medium" style={{ color: INK }}>Marcus Chen, VP Revenue at CloudStack</p>
-            <div className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10">
-              {RESULT_STATS.map(([v, l]) => (
-                <div key={v}>
-                  <p className="font-app-grotesk text-[36px] font-bold leading-none" style={{ color: GREEN }}>{v}</p>
-                  <p className="mt-1.5 text-sm leading-snug" style={{ color: SUBTLE }}>{l}</p>
-                </div>
+            <div className="mb-10 flex items-start gap-3 rounded-xl border p-4" style={{ backgroundColor: PAGE, borderColor: HAIRLINE }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`${IMG}/${FACES[0]}`} alt="" className="h-10 w-10 shrink-0 rounded-full object-cover" />
+              <div>
+                <p className="text-sm italic leading-relaxed" style={{ color: SUBTLE }}>
+                  &ldquo;We cut admin time by 62% in the first month. Our reps went from 4 hours of CRM work per day to 45 minutes.&rdquo;
+                </p>
+                <p className="mt-1.5 text-xs font-medium" style={{ color: SUBTLE }}>Marcus Chen, VP Revenue at CloudStack</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-8">
+              {RESULT_STATS.map(([v, l], i) => (
+                <Reveal key={v} from="small" delay={i * 70}>
+                  <p className="mb-1 font-app-grotesk text-3xl font-bold sm:text-4xl" style={{ color: GREEN }}>{v}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: SUBTLE }}>{l}</p>
+                </Reveal>
               ))}
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -576,15 +867,16 @@ function PersonasBand() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid gap-6 lg:grid-cols-2">
           {PERSONAS.map((p, pi) => (
-            <article key={p.eyebrow} className="overflow-hidden rounded-2xl border bg-white" style={{ borderColor: HAIRLINE }}>
+            <Reveal key={p.eyebrow} from="up" delay={pi * 120}>
+            <article className="overflow-hidden rounded-2xl border bg-white transition-shadow duration-300 hover:shadow-lg" style={{ borderColor: HAIRLINE }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`${IMG}/${p.img}`} alt="" className="h-56 w-full object-cover" />
+              <img src={`${IMG}/${p.img}`} alt="" className="h-48 w-full object-cover" />
               <div className="p-10">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: SUBTLE }}>{p.eyebrow}</p>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wider" style={{ color: MUTED }}>{p.eyebrow}</p>
                 <h3 className="font-app-grotesk text-2xl font-bold" style={{ color: INK }}>{p.h}</h3>
                 <ul className="mt-6 space-y-3.5">
                   {p.items.map((it) => (
-                    <li key={it} className="flex items-start gap-3 text-[15px] leading-relaxed" style={{ color: SUBTLE }}>
+                    <li key={it} className="flex items-start gap-3 text-[15px] leading-relaxed" style={{ color: MUTED }}>
                       <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: PERSONA_DOTS[pi % PERSONA_DOTS.length] }} />
                       {it}
                     </li>
@@ -592,6 +884,7 @@ function PersonasBand() {
                 </ul>
               </div>
             </article>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -611,32 +904,30 @@ function HowBand() {
   return (
     <section className="py-20 lg:py-28" style={{ backgroundColor: "#fff" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid gap-12 lg:grid-cols-5">
-          <div className="lg:sticky lg:top-28 lg:self-start">
+        <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
+          <Reveal from="small" className="lg:sticky lg:top-28">
             <Kicker>How it works</Kicker>
-            <h2 className="font-app-grotesk text-[32px] leading-[1.15] font-bold lg:text-[44px]" style={{ color: INK }}>
+            <h2 className="mb-6 font-app-grotesk text-3xl font-bold leading-[1.11] sm:text-4xl" style={{ color: INK }}>
               Every stage of your sales cycle. Handled.
             </h2>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`${IMG}/hero-desk-HQ_tqJaM.jpg`}
-              alt=""
-              className="mt-8 h-64 w-full rounded-2xl object-cover shadow-[0_20px_50px_-24px_rgba(23,28,38,0.25)] lg:h-80"
+              alt="Sales workspace with dashboard"
+              className="mt-4 h-64 w-full rounded-2xl object-cover lg:h-80"
             />
-          </div>
-          <div className="space-y-8 lg:col-span-3">
-            {STEPS.map((s) => (
-              <div
-                key={s.n}
-                className="flex flex-col gap-4 rounded-xl border p-6 sm:flex-row sm:items-start lg:p-8"
-                style={{ backgroundColor: MIST, borderColor: HAIRLINE }}
-              >
-                <p className="shrink-0 text-sm font-bold pt-0.5 sm:w-20" style={{ color: GREEN }}>{s.n}</p>
-                <div>
-                  <h3 className="font-app-grotesk text-base font-bold" style={{ color: INK }}>{s.t}</h3>
-                  <p className="mt-2 text-sm leading-relaxed" style={{ color: SUBTLE }}>{s.p}</p>
+          </Reveal>
+          <div className="space-y-4">
+            {STEPS.map((s, i) => (
+              <Reveal key={s.n} from="small" delay={i * 80}>
+                <div className="flex flex-col gap-4 rounded-xl border bg-white p-6 transition-shadow duration-300 hover:shadow-md sm:flex-row sm:items-start sm:gap-8 lg:p-7" style={{ borderColor: HAIRLINE }}>
+                  <p className="shrink-0 pt-0.5 text-sm font-bold sm:w-20" style={{ color: GREEN }}>{s.n}</p>
+                  <div>
+                    <h3 className="mb-1.5 font-app-grotesk text-base font-bold" style={{ color: INK }}>{s.t}</h3>
+                    <p className="text-sm leading-relaxed" style={{ color: SUBTLE }}>{s.p}</p>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -665,12 +956,12 @@ const NEXT_STEPS = [
 
 function AgentBand() {
   return (
-    <section className="py-20 lg:py-24">
+    <section className="py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <Kicker>AI Sales Agent</Kicker>
-            <h2 className="font-app-grotesk text-[32px] font-bold leading-tight lg:text-[44px]" style={{ color: INK }}>
+            <Kicker color={CORAL}>AI Sales Agent</Kicker>
+            <h2 className="font-app-grotesk text-3xl font-bold leading-[1.11] sm:text-4xl" style={{ color: INK }}>
               It doesn&rsquo;t prep your calls. It runs them.
             </h2>
             <p className="mt-4 text-base leading-relaxed" style={{ color: SUBTLE }}>
@@ -745,30 +1036,106 @@ function LiveCallCard() {
     </div>
   );
 }
-const INTEGRATIONS = ["Salesforce", "HubSpot", "Gmail", "Outlook", "Slack", "Zoom", "Gong", "LinkedIn"];
+const INTEGRATIONS = [
+  {
+    name: "Salesforce",
+    svg: (
+      <svg viewBox="0 0 48 48" className="h-6 w-6 sm:h-8 sm:w-8" aria-hidden="true">
+        <path d="M20 8c2.5-2.6 6-4 9.5-4 5 0 9.5 2.7 11.8 7 2-.9 4.2-1.4 6.4-1.4 8.5 0 15.3 6.8 15.3 15.3S56.2 40.2 47.7 40.2c-1.3 0-2.5-.2-3.7-.5C41.8 43.8 37.5 46.5 32.5 46.5c-2 0-3.9-.4-5.6-1.2C24.7 49.4 20.2 52 15 52 7.3 52 1 45.7 1 38c0-3 .9-5.7 2.5-8C1.3 27.8 0 24.5 0 21c0-7.2 5.8-13 13-13 2.8 0 5.3.9 7 2z" fill="hsl(210, 80%, 55%)" transform="scale(0.5)" />
+      </svg>
+    ),
+  },
+  {
+    name: "HubSpot",
+    svg: (
+      <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden="true">
+        <path d="M17.5 8.2V5.8a2 2 0 001.1-1.8 2 2 0 00-4 0c0 .8.5 1.4 1.1 1.8v2.4a5.5 5.5 0 00-3.4 1.8l-6.2-4.8a2 2 0 00.1-.6 2 2 0 10-2 2c.4 0 .8-.1 1.1-.3l6.1 4.7a5.5 5.5 0 00.3 6.2l-1.9 1.9a1.6 1.6 0 00-.5-.1 1.8 1.8 0 101.8 1.8 1.6 1.6 0 00-.1-.5l1.9-1.9a5.5 5.5 0 104.5-9.2z" fill="hsl(14, 90%, 55%)" />
+      </svg>
+    ),
+  },
+  {
+    name: "Gmail",
+    svg: (
+      <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden="true">
+        <path d="M22 6l-10 7L2 6V4l10 7 10-7v2z" fill="hsl(4, 80%, 55%)" />
+        <rect x="1" y="3" width="22" height="18" rx="2" fill="none" stroke="hsl(4, 80%, 55%)" strokeWidth="1.5" />
+      </svg>
+    ),
+  },
+  {
+    name: "Outlook",
+    svg: (
+      <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden="true">
+        <rect x="2" y="4" width="20" height="16" rx="2" fill="hsl(210, 80%, 50%)" />
+        <path d="M2 6l10 6 10-6" fill="none" stroke="white" strokeWidth="1.5" />
+        <rect x="4" y="8" width="8" height="8" rx="1" fill="hsl(210, 90%, 40%)" />
+      </svg>
+    ),
+  },
+  {
+    name: "Slack",
+    svg: (
+      <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden="true">
+        <path d="M5.5 10a1.5 1.5 0 110-3h3v3h-3zm8 0h3a1.5 1.5 0 100-3h-3v3z" fill="hsl(160, 60%, 45%)" />
+        <path d="M10 5.5a1.5 1.5 0 10-3 0v3h3v-3zm0 8v3a1.5 1.5 0 103 0v-3h-3z" fill="hsl(40, 90%, 55%)" />
+        <path d="M18.5 14a1.5 1.5 0 110 3h-3v-3h3zm-8 0h-3a1.5 1.5 0 100 3h3v-3z" fill="hsl(340, 70%, 55%)" />
+        <path d="M14 18.5a1.5 1.5 0 103 0v-3h-3v3zm0-8v-3a1.5 1.5 0 10-3 0v3h3z" fill="hsl(200, 80%, 55%)" />
+      </svg>
+    ),
+  },
+  {
+    name: "Zoom",
+    svg: (
+      <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden="true">
+        <rect x="2" y="5" width="20" height="14" rx="3" fill="hsl(210, 90%, 55%)" />
+        <path d="M15 9l5-3v12l-5-3V9z" fill="white" />
+        <rect x="4" y="8" width="10" height="8" rx="1" fill="white" />
+      </svg>
+    ),
+  },
+  {
+    name: "Gong",
+    svg: (
+      <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" fill="hsl(260, 70%, 55%)" />
+        <path d="M8 12a4 4 0 018 0" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="12" cy="14" r="1.5" fill="white" />
+      </svg>
+    ),
+  },
+  {
+    name: "LinkedIn",
+    svg: (
+      <svg viewBox="0 0 24 24" className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="3" fill="hsl(210, 80%, 45%)" />
+        <path d="M7 10v7m4-7v7m0-4.5a3 3 0 016 0V17" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+        <circle cx="7" cy="7" r="1" fill="white" />
+      </svg>
+    ),
+  },
+];
 
 function IntegrationsBand() {
   return (
-    <section className="py-16 lg:py-[102px]" style={{ backgroundColor: GREEN }}>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="text-center">
-          <h2 className="font-app-grotesk text-[26px] font-bold text-white lg:text-[30px]">
-            Plugs into your existing stack. No migration.
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl leading-relaxed text-white/75">
-            Your team keeps using the tools they already know. Sales Automator works underneath.
-          </p>
-        </div>
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
-          {INTEGRATIONS.map((n) => (
-            <span key={n} className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white">
-              {n}
-            </span>
+    <section className="py-16 lg:py-20" style={{ backgroundColor: GREEN }}>
+      <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
+        <h2 className="mb-3 font-app-grotesk text-2xl font-bold leading-[1.2] text-white sm:text-3xl">
+          Plugs into your existing stack. No migration.
+        </h2>
+        <p className="mx-auto mb-10 max-w-lg text-base text-white/60">
+          Your team keeps using the tools they already know. Sales Automator works underneath.
+        </p>
+        <div className="mb-10 flex flex-wrap justify-center gap-2 sm:gap-4">
+          {INTEGRATIONS.map((n, i) => (
+            <Reveal key={n.name} from="scale" delay={i * 50}>
+              <span className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3.5 py-2 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/20 hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.45)] sm:gap-2.5 sm:px-5 sm:py-2.5">
+                {n.svg}
+                <span className="text-xs font-medium text-white/80 sm:text-sm">{n.name}</span>
+              </span>
+            </Reveal>
           ))}
         </div>
-        <div className="mt-12 flex justify-center">
-          <PillBtn>Book a Demo</PillBtn>
-        </div>
+        <PillBtn>Book a Demo</PillBtn>
       </div>
     </section>
   );
@@ -786,26 +1153,28 @@ function PricingBand() {
     <section className="py-20 lg:py-28" style={{ backgroundColor: "#fff" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-5 lg:gap-16">
-          <div className="lg:sticky lg:top-28 lg:self-start">
+          <div className="mb-10 lg:col-span-2 lg:mb-0 lg:sticky lg:top-32 lg:self-start">
             <Kicker>Pricing</Kicker>
-            <h2 className="mt-1 font-app-grotesk text-[32px] font-bold leading-[1.15] lg:text-[44px]" style={{ color: INK }}>
+            <h2 className="mb-4 font-app-grotesk text-3xl font-bold leading-[1.11] sm:text-4xl" style={{ color: INK }}>
               Priced like the work it replaces.
             </h2>
-            <p className="mt-5 max-w-md text-[16px] leading-relaxed" style={{ color: SUBTLE }}>
+            <p className="text-base leading-relaxed" style={{ color: SUBTLE }}>
               Outcome-based pricing. No seat licenses, no surprise invoices, no shelfware.
             </p>
           </div>
           <div className="space-y-4 lg:col-span-3">
-            {PRICING_CARDS.map((c) => (
-              <div key={c.t} className="flex items-start gap-4 rounded-xl border p-6" style={{ backgroundColor: PAGE, borderColor: HAIRLINE }}>
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: ACCENT, color: GREEN }}>
-                  <Ico className="h-5 w-5">{c.icon}</Ico>
-                </span>
-                <div>
-                  <h3 className="font-app-grotesk text-base font-bold" style={{ color: INK }}>{c.t}</h3>
-                  <p className="mt-1 text-sm leading-relaxed" style={{ color: SUBTLE }}>{c.p}</p>
+            {PRICING_CARDS.map((c, i) => (
+              <Reveal key={c.t} from="small" delay={i * 70}>
+                <div className="flex items-start gap-4 rounded-xl border bg-white p-6 transition-shadow duration-300 hover:shadow-md" style={{ borderColor: HAIRLINE }}>
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: ACCENT, color: GREEN }}>
+                    <Ico className="h-5 w-5">{c.icon}</Ico>
+                  </span>
+                  <div>
+                    <h3 className="mb-1.5 font-app-grotesk text-[15px] font-bold" style={{ color: INK }}>{c.t}</h3>
+                    <p className="text-sm leading-relaxed" style={{ color: SUBTLE }}>{c.p}</p>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -815,26 +1184,26 @@ function PricingBand() {
 }
 
 const MINI_STRIP = [
-  { icon: I.plug, t: "Works with your stack", p: "Salesforce, HubSpot, Gmail, Outlook. No migration needed." },
-  { icon: I.users, t: "No per-seat cost", p: "Pay for results, not headcount. Your bill doesn't grow with your team." },
-  { icon: I.shield, t: "Reps stay in control", p: "Automates the admin. Escalates the judgment calls. Nothing goes out without a human in the loop." },
+  { icon: I.layers, t: "Works with your stack", p: "Salesforce, HubSpot, Gmail, Outlook. No migration needed." },
+  { icon: I.creditCard, t: "No per-seat cost", p: "Pay for results, not headcount. Your bill doesn't grow with your team." },
+  { icon: I.userCheck, t: "Reps stay in control", p: "Automates the admin. Escalates the judgment calls. Nothing goes out without a human in the loop." },
 ];
 
 function MiniStripBand() {
   return (
-    <section className="border-t py-14 lg:py-[84px]" style={{ borderColor: HAIRLINE }}>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="grid gap-10 sm:grid-cols-3">
-          {MINI_STRIP.map(({ icon, t, p }) => (
-            <div key={t} className="text-center">
-              <div className="flex items-center justify-center gap-3 sm:flex-col sm:text-center">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: "#e4f3ee", color: GREEN }}>
-                  <Ico className="h-5 w-5">{icon}</Ico>
-                </span>
-                <h3 className="font-app-grotesk text-[15px] font-bold" style={{ color: INK }}>{t}</h3>
+    <section className="border-t py-16 lg:py-20" style={{ borderColor: HAIRLINE }}>
+      <div className="mx-auto max-w-4xl px-4 sm:px-6">
+        <div className="grid gap-10 text-center sm:grid-cols-3">
+          {MINI_STRIP.map(({ icon, t, p }, i) => (
+            <Reveal key={t} from="small" delay={i * 90}>
+              <div className="flex flex-col items-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: ACCENT, color: GREEN }}>
+                  <Ico className="h-[22px] w-[22px]">{icon}</Ico>
+                </div>
+                <h3 className="mb-2 font-app-grotesk text-sm font-bold leading-[1.43]" style={{ color: INK }}>{t}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: SUBTLE }}>{p}</p>
               </div>
-              <p className="mt-2 text-sm leading-relaxed sm:max-w-[280px] sm:mx-auto" style={{ color: SUBTLE }}>{p}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -844,8 +1213,8 @@ function MiniStripBand() {
 function CtaBand() {
   return (
     <section className="border-t py-20 lg:py-28" style={{ borderColor: HAIRLINE, backgroundColor: "#fff" }}>
-      <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
-        <h2 className="font-app-grotesk text-[30px] font-bold leading-tight sm:text-[36px]" style={{ color: INK }}>
+      <Reveal from="up" className="mx-auto max-w-2xl px-4 text-center sm:px-6">
+        <h2 className="font-app-grotesk text-[30px] font-bold leading-[1.12] sm:text-[36px]" style={{ color: INK }}>
           Your reps should be selling. Not doing admin.
         </h2>
         <p className="mt-3 text-lg" style={{ color: SUBTLE }}>
@@ -854,26 +1223,30 @@ function CtaBand() {
         <div className="mt-6 flex justify-center">
           <PillBtn>Book a Demo</PillBtn>
         </div>
-        <div className="mt-8 flex items-center justify-center gap-3">
+        <div className="mt-8 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-3">
           <div className="flex -space-x-2">
             {[FACES[0], FACES[2], FACES[3], FACES[5]].map((f) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img key={f} src={`${IMG}/${f}`} alt="" className="h-8 w-8 rounded-full border-2 border-white object-cover" />
             ))}
           </div>
-          <p className="text-xs" style={{ color: SUBTLE }}>Join 200+ teams already using Sales Automator</p>
+          <p className="text-center text-xs sm:text-left" style={{ color: SUBTLE }}>
+            Join 200+ teams already using Sales Automator
+          </p>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }
-
 function Footer() {
   return (
     <footer className="border-t py-[38px]" style={{ borderColor: HAIRLINE }}>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <p className="font-app-grotesk text-sm font-bold" style={{ color: INK }}>Sales Automator</p>
-        <p className="mt-2 text-xs" style={{ color: SUBTLE }}>Â© 2026 Sales Automator. All rights reserved.</p>
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 text-center sm:flex-row sm:justify-between sm:px-6 sm:text-left">
+        <a href="/" className="flex items-center gap-2.5">
+          <LogoMark size={24} />
+          <span className="font-app-grotesk text-sm font-bold" style={{ color: INK }}>Sales Automator</span>
+        </a>
+        <p className="text-xs" style={{ color: SUBTLE }}>© 2026 Sales Automator. All rights reserved.</p>
       </div>
     </footer>
   );
@@ -881,8 +1254,9 @@ function Footer() {
 
 export default function SalesLayout({ app }: { app: AppConfig }) {
   const { output, loading } = useBrain(app.id);
+
   return (
-    <div className="font-app-sans min-h-screen overflow-x-hidden" style={{ backgroundColor: PAGE, color: INK }}>
+    <div className="font-app-sans min-h-screen overflow-x-clip" style={{ backgroundColor: PAGE, color: INK }}>
       <style>{`::selection{background:${GREEN};color:#fff}`}</style>
       <Nav />
       <main>
