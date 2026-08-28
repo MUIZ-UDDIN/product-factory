@@ -1,4 +1,4 @@
-export type AppLayout = "search" | "feed" | "dashboard" | "form" | "agentic" | "platform" | "converter" | "social" | "spatial" | "consultancy" | "events" | "outreach" | "warmup" | "sales" | "venture";
+export type AppLayout = "search" | "feed" | "dashboard" | "form" | "agentic" | "platform" | "converter" | "social" | "gather" | "consultancy" | "events" | "outreach" | "warmup" | "sales" | "venture";
 
 export type AppVibe = "enterprise" | "vibrant" | "minimal" | "dark" | "playful";
 
@@ -263,7 +263,7 @@ export const APPS: Record<number, AppConfig> = {
     systemPrompt:
       "You are a spatial office strategist. Output a team layout: roles, agent assignments, workflow zones, and collaboration protocols. Be specific about which tasks humans handle vs AI agents. Output in Markdown.",
     tier: "L",
-    layout: "spatial",
+    layout: "gather",
     vibe: "enterprise",
     icon: "building",
     primaryUtility: "Spatial virtual office with AI agents",

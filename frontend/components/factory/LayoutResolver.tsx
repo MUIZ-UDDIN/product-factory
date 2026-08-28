@@ -7,7 +7,7 @@ import AgenticLayout from "./layouts/AgenticLayout";
 import CreatorFeedLayout from "./layouts/CreatorFeedLayout";
 import ConverterLayout from "./layouts/ConverterLayout";
 import SocialIdolLayout from "./layouts/SocialIdolLayout";
-import SpatialLayout from "./layouts/SpatialLayout";
+import GatherLayout from "./layouts/GatherLayout";
 import AutomationLayout from "./layouts/AutomationLayout";
 import EventsLayout from "./layouts/EventsLayout";
 import ColdDmsLayout from "./layouts/ColdDmsLayout";
@@ -31,8 +31,8 @@ export default function LayoutResolver({ app }: { app: AppConfig }) {
       return <ConverterLayout app={app} />;
     case "social":
       return <SocialIdolLayout app={app} />;
-    case "spatial":
-      return <SpatialLayout app={app} />;
+    case "gather":
+      return <GatherLayout app={app} />;
     case "consultancy":
       return <AutomationLayout app={app} />;
     case "events":

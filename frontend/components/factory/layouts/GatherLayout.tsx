@@ -72,7 +72,7 @@ const AGENTS = [
   { name: "Code Reviewer", status: "Reviewing PR #128", tint: "#5aa2e8" },
 ];
 
-export default function SpatialLayout({ app }: { app: AppConfig }) {
+export default function GatherLayout({ app }: { app: AppConfig }) {
   const [activeTab, setActiveTab] = useState("Meetings");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
@@ -83,7 +83,7 @@ export default function SpatialLayout({ app }: { app: AppConfig }) {
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-16">
           <div className="flex items-center gap-4">
             <a href="#" className="flex items-center gap-2">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 13l5-6 3 4 6-8" stroke="#1f255c" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <img src="/gather/nexus-logo.png" alt="Nexus" className="h-6 w-auto" />
               <span className="text-lg font-bold tracking-tight">Nexus</span>
             </a>
             <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium" style={{ backgroundColor: "#f0eee9", color: "#171a26" }}>
@@ -148,25 +148,8 @@ export default function SpatialLayout({ app }: { app: AppConfig }) {
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: "#f2be4a" }} />
             <span className="w-3 h-3 rounded-full" style={{ backgroundColor: "#54c063" }} />
           </div>
-          <div className="relative" style={{ backgroundColor: "#171a26" }}>
-            <div className="absolute top-5 left-0 right-0 text-center text-white text-xl md:text-2xl font-bold z-10">Design Review</div>
-            <button className="absolute top-4 right-5 w-10 h-10 rounded-full flex items-center justify-center z-10" style={{ backgroundColor: "#ffffff" }} aria-label="Search">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="#171a26" strokeWidth="1.5"/><path d="M10.5 10.5L14 14" stroke="#171a26" strokeWidth="1.5" strokeLinecap="round"/></svg>
-            </button>
-            <div className="grid grid-cols-3 gap-3 p-6 pt-20">
-              {DESKS.slice(0, 6).map((d, i) => (
-                <div key={i} className="aspect-[4/3] rounded-xl flex flex-col items-center justify-center gap-2" style={{ backgroundColor: `hsl(${228 + i * 8}, 22%, ${16 + i * 3}%)` }}>
-                  <div className="relative">
-                    {d.type === "human"
-                      ? <HumanAvatar skin={d.skin!} hair={d.hair!} shirt={d.shirt!} size={44} />
-                      : <RobotAvatar tint={d.tint!} size={44} />}
-                    {d.type === "human" && <StatusDot />}
-                  </div>
-                  <div className="text-white text-xs font-semibold">{d.name}</div>
-                  <div className="text-[10px]" style={{ color: "#9a9cb5" }}>{d.role}</div>
-                </div>
-              ))}
-            </div>
+          <div className="relative bg-[#171a26]">
+            <img src="/gather/hero-video-grid.jpg" alt="A live team video call in Nexus" className="w-full h-auto block" />
           </div>
         </div>
       </section>
@@ -180,37 +163,24 @@ export default function SpatialLayout({ app }: { app: AppConfig }) {
             Forget scheduling and meeting links. Look around your virtual office to find who&apos;s free and start talking in seconds.
           </p>
         </div>
-        <div className="max-w-5xl mx-auto rounded-3xl p-8 md:p-14" style={{ backgroundColor: "#f6e3c6" }}>
-          <div className="rounded-2xl overflow-hidden shadow-xl bg-white">
-            <div className="flex items-center justify-between px-5 py-3.5 border-b" style={{ borderColor: "#eceae5" }}>
-              <div className="flex items-center gap-2 font-bold">
-                <span className="w-6 h-6 rounded-md flex items-center justify-center" style={{ backgroundColor: "#5aa2e8" }}>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6c2-3 6-3 8 0M2 6c2 3 6 3 8 0" stroke="#fff" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                </span>
-                Virtual Office
+        <div className="max-w-5xl mx-auto">
+          <img src="/gather/virtual-office.jpg" alt="A virtual office space in Nexus" className="w-full h-auto rounded-3xl shadow-xl mb-14" />
+          <div className="grid sm:grid-cols-2 gap-x-10 gap-y-8">
+            {[
+              { title: "See who's free", desc: "Instantly know who's free, focused, or in meetings" },
+              { title: "Wave them over", desc: "Get someone's attention with a quick wave" },
+              { title: "Hear nearby chats", desc: "Overhear conversations naturally, just like an office" },
+              { title: "Join in a click", desc: "Jump into any conversation with a single click" },
+            ].map((f) => (
+              <div key={f.title}>
+                <h3 className="text-lg font-bold mb-2">{f.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: "#6a6d81" }}>{f.desc}</p>
               </div>
-              <div className="flex items-center gap-2 text-xs" style={{ color: "#6a6d81" }}>
-                <span className="hidden sm:inline">Available</span>
-                <span className="px-3 py-1.5 rounded-lg font-semibold text-xs" style={{ backgroundColor: "#f0eee9", color: "#171a26" }}>Seat Status</span>
-                <div className="w-7 h-7 rounded-full" style={{ background: "linear-gradient(135deg, #e8b23a, #c25e5e)" }} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-6" style={{ backgroundColor: "#faf9f6" }}>
-              {["Meeting Room", "Focus Room", "Lounge", "Quiet Zone"].map((room, i) => (
-                <div key={room} className="rounded-xl p-4 h-28 flex flex-col justify-between" style={{ backgroundColor: i % 2 === 0 ? "#eef4fb" : "#fdf3e3", border: "1px solid #eceae5" }}>
-                  <div className="text-xs font-bold" style={{ color: "#4b4e63" }}>{room}</div>
-                  <div className="flex -space-x-1.5">
-                    {DESKS.slice(i * 2, i * 2 + 2).map((d, j) => (
-                      <div key={j} className="relative">
-                        {d.type === "human"
-                          ? <HumanAvatar skin={d.skin!} hair={d.hair!} shirt={d.shirt!} size={26} />
-                          : <RobotAvatar tint={d.tint!} size={26} />}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-4 mt-10">
+            <button className="px-6 py-3 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity" style={{ backgroundColor: "#1f255c" }}>Start free 30-day trial</button>
+            <button className="px-6 py-3 rounded-xl text-sm font-semibold hover:opacity-80 transition-opacity" style={{ border: "1px solid #e2e0da" }}>Learn more →</button>
           </div>
         </div>
       </section>
@@ -224,6 +194,8 @@ export default function SpatialLayout({ app }: { app: AppConfig }) {
             Gather gives you a room. Nexus gives you coworkers — human and AI — in the same space, ready whenever you are.
           </p>
         </div>
+
+
 
         {/* CoWork office map */}
         <div className="max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-2xl bg-white text-left" style={{ border: "1px solid #e2e0da" }}>
@@ -306,7 +278,7 @@ export default function SpatialLayout({ app }: { app: AppConfig }) {
                     <span className="absolute top-3 right-4 text-[10px] font-bold tracking-widest px-2 py-0.5 rounded" style={{ backgroundColor: "#e4dcc9", color: "#8a8474" }}>FOCUS ROOM</span>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-3 gap-y-8 pt-8 pb-2">
                       {DESKS.map((d, i) => (
-                        <div key={i} className="flex flex-col items-center gap-1.5">
+                        <div key={i} className="flex flex-col items-center gap-1.5 transition-transform duration-200 hover:-translate-y-1 cursor-pointer">
                           <div className="relative">
                             {d.type === "human"
                               ? <HumanAvatar skin={d.skin!} hair={d.hair!} shirt={d.shirt!} size={48} />
@@ -386,6 +358,27 @@ export default function SpatialLayout({ app }: { app: AppConfig }) {
             </div>
           </div>
         </div>
+
+
+      <div className="max-w-5xl mx-auto mt-16">
+        <div className="grid sm:grid-cols-2 gap-x-10 gap-y-8">
+          {[
+            { title: "Agents sit with your team", desc: "Give each AI agent a desk, a role, and a name — right next to the humans." },
+            { title: "Talk, don't prompt", desc: "Walk up to an agent and ask out loud. It answers in the conversation." },
+            { title: "They pick up the busywork", desc: "Notes, research, PR reviews and follow-ups happen while you work." },
+            { title: "Beyond a map of avatars", desc: "Other virtual offices just move you around. Nexus gives you teammates." },
+          ].map((f) => (
+            <div key={f.title}>
+              <h3 className="text-lg font-bold mb-2">{f.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: "#6a6d81" }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center gap-4 mt-10">
+          <button className="px-6 py-3 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity" style={{ backgroundColor: "#1f255c" }}>Hire your first agent</button>
+          <button className="px-6 py-3 rounded-xl text-sm font-semibold hover:opacity-80 transition-opacity" style={{ border: "1px solid #e2e0da" }}>See how it compares →</button>
+        </div>
+      </div>
       </section>
 
       {/* Minimize distractions */}
@@ -401,48 +394,15 @@ export default function SpatialLayout({ app }: { app: AppConfig }) {
           <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid #eceae5" }}>
             <div className="font-bold text-lg mb-2">Simplify Your View</div>
             <p className="text-sm mb-6 leading-relaxed" style={{ color: "#6a6d81" }}>Switch to a simplified view to focus on people rather than details.</p>
-            <div className="rounded-xl h-40 flex items-center justify-center" style={{ background: "linear-gradient(140deg, #f6e3c6, #f0eee9)" }}>
-              <div className="bg-white rounded-lg shadow-md px-4 py-3 space-y-2 w-40">
-                {["Team standup", "Design review", "1:1 with Alex"].map((t, i) => (
-                  <div key={t} className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full shrink-0" style={{ background: `linear-gradient(135deg, hsl(${210 + i * 40},40%,60%), hsl(${250 + i * 40},40%,55%))` }} />
-                    <div>
-                      <div className="text-[9px] font-bold leading-tight">{t}</div>
-                      <div className="text-[8px]" style={{ color: "#9a9cb5" }}>In a call · 3 people</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <img src="/gather/feature-focus.jpg" alt="A simplified, focus-friendly view in Nexus" className="rounded-xl h-40 w-full object-cover" />
           </div>
           <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid #eceae5" }}>
             <div className="font-bold text-lg mb-2">Control What You Hear</div>
             <p className="text-sm mb-6 leading-relaxed" style={{ color: "#6a6d81" }}>You&apos;re muted by default. Full control over what you hear and who hears you.</p>
-            <div className="rounded-xl h-40 flex items-center justify-center" style={{ backgroundColor: "#2b3040" }}>
-              <div className="rounded-lg px-4 py-3 w-44" style={{ backgroundColor: "#3a4056" }}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[9px] font-bold text-white">Controls</span>
-                  <span className="text-[9px]" style={{ color: "#9a9cb5" }}>✕</span>
-                </div>
-                {["Mic", "Volume", "Noise"].map((c, i) => (
-                  <div key={c} className="flex items-center gap-2 mb-1.5">
-                    <span className="text-[8px] w-8" style={{ color: "#c7c9d8" }}>{c}</span>
-                    <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: "#4b5169" }}>
-                      <div className="h-1 rounded-full" style={{ width: `${70 - i * 20}%`, backgroundColor: "#8b7cf6" }} />
-                    </div>
-                  </div>
-                ))}
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="w-6 h-3.5 rounded-full relative" style={{ backgroundColor: "#34b47a" }}>
-                    <span className="absolute right-0.5 top-0.5 w-2.5 h-2.5 rounded-full bg-white" />
-                  </span>
-                  <span className="text-[8px]" style={{ color: "#c7c9d8" }}>Do not disturb mode</span>
-                </div>
-              </div>
-            </div>
+            <img src="/gather/feature-audio.jpg" alt="Control what you hear in Nexus" className="rounded-xl h-40 w-full object-cover" />
           </div>
           <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid #eceae5" }}>
-            <div className="font-bold text-lg mb-2">Set Your Status</div>
+            <div className="font-bold text-lg mb-2">Set Your Availability</div>
             <p className="text-sm mb-6 leading-relaxed" style={{ color: "#6a6d81" }}>Let your team know when you&apos;re free or deep in focus mode.</p>
             <div className="rounded-xl h-40 flex flex-col items-center justify-center gap-4" style={{ backgroundColor: "#f0eee9" }}>
               {[
@@ -469,24 +429,31 @@ export default function SpatialLayout({ app }: { app: AppConfig }) {
             Nexus makes remote work feel more natural and delightful
           </p>
         </div>
-        <div className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6 mb-6">
           <div className="rounded-2xl bg-white p-8" style={{ border: "1px solid #eceae5" }}>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs" style={{ backgroundColor: "#e05252" }}>✕</span>
-              <span className="font-bold">Static meeting links</span>
-            </div>
-            <p className="text-sm leading-relaxed" style={{ color: "#6a6d81" }}>
-              Calendar ping-pong. Dead Zoom tabs. Conversations that die when the call ends. Work feels like a series of appointments.
-            </p>
+            <h3 className="text-lg font-bold mb-4">Traditional Collaboration Tools</h3>
+            <ul className="space-y-3">
+              {["Another Zoom link", "Wait hours for Slack replies", "Exhausted from 'camera-on' all the time", "Disconnected from your team", "Static meeting links"].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm leading-relaxed" style={{ color: "#6a6d81" }}>
+                  <span className="mt-1 w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px] shrink-0" style={{ backgroundColor: "#e05252" }}>✕</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="rounded-2xl bg-white p-8" style={{ border: "2px solid #1f255c" }}>
             <div className="flex items-center gap-2 mb-4">
-              <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs" style={{ backgroundColor: "#29a366" }}>✓</span>
-              <span className="font-bold">A workspace that feels alive</span>
+              <span className="w-5 h-5 rounded-md flex items-center justify-center text-white text-[10px] font-bold" style={{ backgroundColor: "#1f255c" }}>N</span>
+              <span className="font-bold">Nexus's Workspace</span>
             </div>
-            <p className="text-sm leading-relaxed" style={{ color: "#6a6d81" }}>
-              Walk over to a teammate. See who&apos;s around. Chat, share, and collaborate in seconds — then get back to flow.
-            </p>
+            <ul className="space-y-3">
+              {["Walk up and talk — no links required", "See who's free right now", "Be present without being on camera", "Feel the team's energy at a glance", "A workspace that feels alive"].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm leading-relaxed" style={{ color: "#6a6d81" }}>
+                  <span className="mt-1 w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px] shrink-0" style={{ backgroundColor: "#29a366" }}>✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -595,25 +562,12 @@ export default function SpatialLayout({ app }: { app: AppConfig }) {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 md:py-28 px-6" style={{ backgroundColor: "rgba(240,238,234,0.5)" }}>
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-5">Ready to feel closer to your team?</h2>
-          <p className="text-lg md:text-xl leading-relaxed mb-10" style={{ color: "#6a6d81" }}>
-            Set up your virtual office in minutes. Humans and AI agents included.
-          </p>
-          <button className="px-8 py-4 text-base font-semibold rounded-2xl text-white hover:opacity-90 transition-opacity" style={{ backgroundColor: "#1f255c" }}>
-            Create Your Space
-          </button>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="border-t px-6 pt-16 pb-8" style={{ borderColor: "#eceae5" }}>
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-10 mb-14">
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 13l5-6 3 4 6-8" stroke="#1f255c" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <img src="/gather/nexus-logo.png" alt="Nexus" className="h-6 w-auto" />
               <span className="text-lg font-bold tracking-tight">Nexus</span>
             </div>
             <p className="text-sm max-w-xs leading-relaxed" style={{ color: "#6a6d81" }}>

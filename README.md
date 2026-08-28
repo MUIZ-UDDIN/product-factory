@@ -31,7 +31,7 @@ One shell, fifteen layouts, ten confirmed client products (route id = client QA 
 | `warmup` | `layouts/WarmupLayout.tsx` | App 7 — Account Warmup |
 | `sales` | `layouts/SalesLayout.tsx` | App 8 — ZIG Competitor |
 | `venture` | `layouts/VentureLayout.tsx` | App 9 — AI Venture Studio |
-| `spatial` | `layouts/SpatialLayout.tsx` | App 10 — Gather Competitor |
+| `gather` | `layouts/GatherLayout.tsx` | App 10 — Gather Competitor |
 
 Shared parts: `FactoryChrome.tsx` (sidebar), `useBrain.ts` (streaming hook), `StreamBox.tsx`, `icons.tsx`.
 
