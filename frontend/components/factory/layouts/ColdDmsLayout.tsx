@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { type AppConfig } from "@/lib/registry";
 import { useBrain } from "@/components/factory/useBrain";
 import StreamBox from "@/components/factory/StreamBox";
@@ -46,7 +46,7 @@ function GoldBtn({ children, className = "", size = "lg" }: { children: ReactNod
   return (
     <button
       className={`inline-flex items-center justify-center whitespace-nowrap rounded-[2px] font-bold transition-all hover:brightness-95 ${
-        size === "lg" ? "h-16 px-12 text-lg" : "h-11 px-6 text-sm font-semibold"
+        size === "lg" ? "h-12 px-7 text-sm md:h-16 md:px-12 md:text-lg" : "h-9 px-4 text-xs md:h-11 md:px-6 md:text-sm font-semibold"
       } ${className}`}
       style={{ backgroundColor: ACCENT, color: INK }}
     >
@@ -58,7 +58,7 @@ function GoldBtn({ children, className = "", size = "lg" }: { children: ReactNod
 function OutlineBtn({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <button
-      className={`inline-flex h-16 items-center justify-center whitespace-nowrap rounded-[2px] border-2 border-white/30 px-12 text-lg font-bold text-white transition-colors hover:bg-white/[0.05] ${className}`}
+      className={`inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[2px] border-2 border-white/30 px-7 text-sm font-bold text-white transition-all hover:bg-white hover:text-[#d08a39] md:h-16 md:px-12 md:text-lg ${className}`}
     >
       {children}
     </button>
@@ -123,6 +123,15 @@ const I = {
       <path d="M2 12h20" />
     </>
   ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </>
+  ),
+  messageCircle: <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />,
+  zap: <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" />,
+  star: <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />,
   clock: (
     <>
       <circle cx="12" cy="12" r="10" />
@@ -150,7 +159,7 @@ const I = {
 
 /* Verbatim copy from reference ------------------------------------------ */
 
-const NAV_LINKS = ["Features", "How It Works", "Pricing", "Testimonials"];
+const NAV_LINKS = ["How It Works", "Features", "Pricing", "Testimonials"];
 
 const HERO_STATS: [string, string][] = [
   ["10,000+", "Leads Generated"],
@@ -159,9 +168,9 @@ const HERO_STATS: [string, string][] = [
 ];
 
 const STEPS = [
-  { n: "1", t: "We Find All Your Customers", d: "AI scans social platforms for relevant conversations and leads." },
-  { n: "2", t: "We Personalize Your Message", d: "Your outreach doesn't feel like spam, it feels like a genuine conversation." },
-  { n: "3", t: "Mass DM to Bring in Customers", d: "Scale your outreach without lifting a finger." },
+  { n: "1", icon: I.search, t: "We Find All Your Customers", d: "AI scans social platforms for relevant conversations and leads." },
+  { n: "2", icon: I.messageCircle, t: "We Personalize Your Message", d: "Your outreach doesn't feel like spam, it feels like a genuine conversation." },
+  { n: "3", icon: I.zap, t: "Mass DM to Bring in Customers", d: "Scale your outreach without lifting a finger." },
 ];
 
 const BEFORE_ITEMS = [
@@ -231,7 +240,8 @@ const FOOT_COLS = [
 /* Component --------------------------------------------------------------- */
 
 export default function ColdDmsLayout({ app }: { app: AppConfig }) {
-  const { output, loading } = useBrain(app.id);
+    const { output, loading } = useBrain(app.id);
+    const [navOpen, setNavOpen] = useState(false);
 
   return (
     <div
@@ -256,7 +266,7 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
       <header className="fixed top-0 inset-x-0 z-50 backdrop-blur-md border-b border-white/10" style={{ backgroundColor: "rgba(10,10,10,0.9)" }}>
         <div className="mx-auto max-w-[1400px] px-6 flex h-16 items-center justify-between">
           <a href="#" className="flex items-center gap-3">
-            <span className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl" style={{ backgroundColor: ACCENT }}>
+            <span className="w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl" style={{ backgroundColor: ACCENT }}>
               AI
             </span>
             <span className="fd text-xl tracking-tight text-white">LeadGen</span>
@@ -268,17 +278,17 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
               </a>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <button className="hidden sm:inline-flex h-11 items-center rounded-[2px] px-6 text-sm font-medium text-white transition-colors hover:bg-white/[0.05]">
               Login
             </button>
             <button
-              className="inline-flex h-9 items-center rounded-[2px] px-4 text-sm font-semibold shadow-md transition-all hover:brightness-95"
+              className="inline-flex h-8 md:h-9 items-center rounded-[2px] px-3 md:px-4 text-xs md:text-sm font-semibold shadow-md transition-all hover:brightness-95"
               style={{ backgroundColor: ACCENT, color: INK }}
             >
               Start Free Trial
             </button>
-            <button className="md:hidden p-2 text-white" aria-label="Menu">
+            <button className="md:hidden p-2 text-white" aria-label="Menu" onClick={() => setNavOpen((v) => !v)}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
                 <line x1="4" x2="20" y1="12" y2="12" />
                 <line x1="4" x2="20" y1="6" y2="6" />
@@ -287,30 +297,57 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
             </button>
           </div>
         </div>
+        {navOpen && (
+          <div className="md:hidden fixed inset-0 z-40" onClick={() => setNavOpen(false)}>
+            <div className="absolute inset-0 bg-black/60" />
+            <div
+              className="absolute top-16 left-0 right-0 bg-[#0a0a0a] border-b border-white/10 p-6 flex flex-col gap-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {NAV_LINKS.map((l) => (
+                <a
+                  key={l}
+                  href={`#${l.toLowerCase().replace(/\s+/g, "-")}`}
+                  className="text-white/90 text-lg"
+                  onClick={() => setNavOpen(false)}
+                >
+                  {l}
+                </a>
+              ))}
+              <button
+                className="inline-flex items-center justify-center rounded-[2px] h-11 px-6 text-sm font-semibold shadow-md"
+                style={{ backgroundColor: ACCENT, color: INK }}
+                onClick={() => setNavOpen(false)}
+              >
+                Start Free Trial
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Hero — #0a0a0a, min-h-screen */}
       <section id="hero" className="relative overflow-hidden min-h-screen" style={{ backgroundColor: BAND_DARK }}>
         <div className="mx-auto max-w-[1400px] px-6 pt-20 pb-16">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
-            <div className="space-y-8">
+            <div className="space-y-8 text-center md:text-left">
               <div className="space-y-6">
                 <h1 className="fd text-[44px] leading-[48px] lg:text-[72px] lg:leading-[72px] tracking-[-1.8px] text-white">
                   Find Your Customers <span className="italic" style={{ color: ACCENT }}>10x Faster</span> with One Click
                 </h1>
-                <p className="text-xl leading-7 lg:text-2xl lg:leading-8 text-white/90 max-w-full">
+                <p className="text-xl leading-7 lg:text-2xl lg:leading-8 text-white/90 max-w-full mx-auto">
                   AI LeadGen finds and converts your ideal customers automatically. Stop wasting time on manual prospecting and start growing.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap justify-center gap-3 md:gap-4 md:justify-start">
                 <GoldBtn>Start Free Trial</GoldBtn>
                 <OutlineBtn>Book a Demo</OutlineBtn>
               </div>
-              <div className="flex flex-wrap gap-x-12 gap-y-6 pt-4">
+              <div className="grid grid-cols-3 gap-3 text-center pt-4 md:flex md:flex-wrap md:justify-start md:gap-x-12 md:gap-y-6 md:text-left">
                 {HERO_STATS.map(([n, l]) => (
                   <div key={l}>
-                    <div className="text-3xl font-bold text-white">{n}</div>
-                    <div className="text-sm text-white/80 mt-1">{l}</div>
+                    <div className="text-2xl md:text-3xl font-bold text-white">{n}</div>
+                    <div className="text-xs md:text-sm text-white/80 mt-1">{l}</div>
                   </div>
                 ))}
               </div>
@@ -329,25 +366,30 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
       <section id="how-it-works" className="relative overflow-hidden py-24" style={{ backgroundColor: BAND_DARK }}>
         <div className="mx-auto max-w-[1400px] px-6">
           <SectionHead title="How It Works" sub="Three simple steps to transform your lead generation and scale your business" />
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-16">
-              {STEPS.map((s) => (
-                <div key={s.n}>
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg" style={{ backgroundColor: ACCENT }}>
-                    {s.n}
-                  </div>
-                  <h3 className="fd text-xl leading-7 text-white mt-8">{s.t}</h3>
-                  <p className="text-white/70 leading-relaxed mt-3">{s.d}</p>
-                </div>
-              ))}
-            </div>
-            <div className="relative">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+            <div className="text-center lg:order-1">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`${IMG}/how-it-works-CYDiFHLP.png`} alt="How it works diagram" width={652} height={435} className="w-full h-auto rounded-md" />
+              <img src={`${IMG}/how-it-works-CYDiFHLP.png`} alt="How it works diagram" width={652} height={435} className="rounded-md max-w-full w-full h-auto" />
+            </div>
+            <div className="lg:order-2">
+              <div className="grid gap-8">
+                {STEPS.map((s) => (
+                  <div key={s.n} className="relative bg-white/[0.03] rounded-md p-6 text-left transition-all duration-300 border border-white/10 hover:bg-white/[0.06]">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full text-white font-bold text-lg flex-shrink-0" style={{ backgroundColor: ACCENT }}>
+                        {s.n}
+                      </div>
+                      <Ico className="w-8 h-8 text-white/90">{s.icon}</Ico>
+                    </div>
+                    <h3 className="fd text-xl font-normal text-white mb-3">{s.t}</h3>
+                    <p className="text-white/80 leading-relaxed">{s.d}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="text-center mt-[101px]">
-            <OutlineBtn>See It In Action</OutlineBtn>
+          <div className="text-center">
+            <GoldBtn>See It In Action</GoldBtn>
           </div>
         </div>
       </section>
@@ -358,36 +400,50 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
           <SectionHead title="Before vs. After" sub="See the dramatic transformation AI LeadGen brings to your business" />
           <div className="grid lg:grid-cols-2 gap-12">
             <div
-              className="rounded-[2px] border p-10 min-h-[386px]"
+              className="rounded-md p-10 border relative overflow-hidden"
               style={{ backgroundColor: "rgba(239,68,68,0.1)", borderColor: "rgba(239,68,68,0.2)" }}
             >
-              <div className="text-sm font-semibold uppercase tracking-wider text-red-400 mb-4">Before</div>
-              <h3 className="fd text-4xl text-white mb-6">The old way of doing things</h3>
-              <ul className="space-y-4">
-                {BEFORE_ITEMS.map((t) => (
-                  <li key={t} className="flex items-start gap-4">
-                    <Ico className="w-5 h-5 text-red-400 mt-0.5 shrink-0">{I.x}</Ico>
-                    <span className="text-white/80 leading-relaxed">{t}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom right, rgba(239,68,68,0.05), transparent)" }} />
+              <div className="relative z-10">
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-12 h-12 border rounded-sm mb-4" style={{ borderColor: "rgba(190,54,45,0.4)" }}>
+                    <Ico className="w-6 h-6" style={{ color: "rgb(190,54,45)" }}>{I.x}</Ico>
+                  </div>
+                  <h3 className="fd text-4xl font-normal text-white mb-3">Before</h3>
+                  <p className="text-white/70">The old way of doing things</p>
+                </div>
+                <div className="space-y-6 text-base text-white/90">
+                  {BEFORE_ITEMS.map((t) => (
+                    <div key={t} className="flex items-center gap-4">
+                      <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: "rgb(248,113,113)" }} />
+                      <span>{t}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
             <div
-              className="rounded-[2px] border p-10 min-h-[386px]"
+              className="rounded-md p-10 border relative overflow-hidden"
               style={{ backgroundColor: "rgba(84,131,91,0.1)", borderColor: "rgba(84,131,91,0.2)" }}
             >
-              <div className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: "#8fc29a" }}>
-                After
+              <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom right, rgba(84,131,91,0.05), transparent)" }} />
+              <div className="relative z-10">
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-12 h-12 border rounded-sm mb-4" style={{ borderColor: "rgba(84,131,91,0.4)" }}>
+                    <Ico className="w-6 h-6" style={{ color: "rgb(84,131,91)" }}>{I.check}</Ico>
+                  </div>
+                  <h3 className="fd text-4xl font-normal text-white mb-3">After</h3>
+                  <p className="text-white/70">The AI-powered way</p>
+                </div>
+                <div className="space-y-6 text-base text-white/90">
+                  {AFTER_ITEMS.map((t) => (
+                    <div key={t} className="flex items-center gap-4">
+                      <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: "rgb(84,131,91)" }} />
+                      <span>{t}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <h3 className="fd text-4xl text-white mb-6">Your business with AI LeadGen</h3>
-              <ul className="space-y-4">
-                {AFTER_ITEMS.map((t) => (
-                  <li key={t} className="flex items-start gap-4">
-                    <Ico className="w-5 h-5 mt-0.5 shrink-0" style={{ color: "#8fc29a" }}>{I.check}</Ico>
-                    <span className="text-white/80 leading-relaxed">{t}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
           <div className="text-center mt-16 mb-16">
@@ -441,17 +497,17 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
         <div className="mx-auto max-w-[1400px] px-6">
           <SectionHead title="Why Choose Us?" sub="We're not just another tool, we're your complete AI-powered lead generation solution" />
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="relative order-2 lg:order-1">
+            <div className="order-1 lg:order-2 relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`${IMG}/why-choose-us-zgQB3_Ha.jpg`} alt="Why choose AI LeadGen" width={644} height={429} className="w-full h-auto rounded-md" style={{ filter: "brightness(0.85)" }} />
               <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(10,10,10,0.55), rgba(208,138,57,0.08))" }} />
             </div>
-            <div className="order-1 lg:order-2 grid sm:grid-cols-2 gap-8">
+            <div className="order-2 lg:order-1 grid sm:grid-cols-2 gap-8">
               {WHY.map((w) => (
-                <div key={w.t} className="rounded-[2px] border border-white/10 bg-white/[0.03] p-8 text-center transition-colors hover:bg-white/[0.06]">
+                <div key={w.t} className="rounded-md border border-white/10 bg-white/[0.03] p-8 text-center transition-all duration-300 hover:bg-white/[0.06]">
                   <div className="flex justify-center mb-6">
                     <div
-                      className="w-11 h-11 rounded-[2px] border flex items-center justify-center"
+                      className="w-11 h-11 rounded-sm border flex items-center justify-center"
                       style={{ borderColor: "rgba(208,138,57,0.4)" }}
                     >
                       <Ico className="w-5 h-5" style={{ color: ACCENT }}>{w.icon}</Ico>
@@ -463,9 +519,9 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
               ))}
             </div>
           </div>
-          <div className="flex flex-wrap justify-center gap-x-16 gap-y-6 mt-[72px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center w-full mt-[72px]">
             {WHY_STATS.map(([n, l]) => (
-              <div key={l} className="text-center">
+              <div key={l}>
                 <div className="text-3xl font-bold text-white">{n}</div>
                 <div className="text-sm text-white/70 mt-1">{l}</div>
               </div>
@@ -480,7 +536,12 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
           <SectionHead title="What Our Customers Say" sub="Real results from real businesses who transformed their lead generation" />
           <div className="grid md:grid-cols-3 gap-8">
             {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="rounded-[2px] border border-white/10 bg-white/[0.03] p-8 min-h-[318px] flex flex-col transition-colors hover:bg-white/[0.06]">
+              <div key={t.name} className="rounded-md border border-white/10 bg-white/[0.03] p-8 min-h-[318px] flex flex-col transition-all duration-300 hover:bg-white/[0.06]">
+                <div className="flex gap-1 mb-6">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <Ico key={i} className="w-5 h-5" style={{ color: "#facc15", fill: "#facc15" }}>{I.star}</Ico>
+                  ))}
+                </div>
                 <p className="text-lg text-white/80 leading-relaxed mb-6 flex-1">{'"'}{t.q}{'"'}</p>
                 <div className="border-t border-white/10 pt-6 flex items-center gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -494,9 +555,9 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap justify-center gap-x-16 gap-y-6 mt-[76px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center w-full mt-[76px]">
             {RATING_STATS.map(([n, l]) => (
-              <div key={l} className="text-center">
+              <div key={l}>
                 <div className="text-3xl font-bold text-white">{n}</div>
                 <div className="text-sm text-white/70 mt-1">{l}</div>
               </div>
@@ -513,19 +574,20 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
             {PLANS.map((p) => (
               <div
                 key={p.name}
-                className={`relative rounded-[2px] bg-white/[0.03] p-8 min-h-[579px] transition-colors hover:bg-white/[0.06] ${
-                  p.popular ? "border-2 border-white/30" : "border border-white/10"
+                className={`relative rounded-md bg-white/[0.03] p-8 min-h-[579px] border transition-all duration-300 hover:scale-105 ${
+                  p.popular ? "border-2 border-white/30" : "border border-white/10 hover:bg-white/[0.06]"
                 }`}
               >
                 {p.popular && (
                   <span
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full px-4 py-1.5 text-sm font-semibold whitespace-nowrap"
-                    style={{ backgroundColor: ACCENT, color: INK }}
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full px-4 py-1.5 text-sm font-semibold whitespace-nowrap inline-flex items-center gap-1.5"
+                    style={{ backgroundColor: ACCENT, color: "#ffffff" }}
                   >
+                    <Ico className="w-4 h-4" style={{ color: "#ffffff", fill: "#ffffff" }}>{I.star}</Ico>
                     Most Popular
                   </span>
                 )}
-                <h3 className="text-xl font-semibold text-white mb-6">{p.name}</h3>
+                <h3 className="text-2xl font-normal text-white mb-6">{p.name}</h3>
                 <div className="mb-2">
                   <span className="text-5xl font-bold text-white">{p.price}</span>
                   {p.per && <span className="text-white/60 ml-1">{p.per}</span>}
@@ -534,20 +596,20 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
                 <ul className="space-y-3 mb-8">
                   {p.feats.map((f) => (
                     <li key={f} className="flex items-start gap-3">
-                      <Ico className="w-4 h-4 mt-1 shrink-0" style={{ color: ACCENT }}>{I.check}</Ico>
+                      <Ico className="w-4 h-4 mt-1 shrink-0" style={{ color: "#54835b" }}>{I.check}</Ico>
                       <span className="text-sm text-white/70">{f}</span>
                     </li>
                   ))}
                 </ul>
-                {p.cta === "Contact Sales" ? (
-                  <button className="w-full h-14 inline-flex items-center justify-center rounded-[2px] border-2 border-white/30 px-10 text-base font-semibold text-white transition-colors hover:bg-white/[0.05]">
-                    {p.cta}
-                  </button>
-                ) : (
+                {p.popular ? (
                   <button
                     className="w-full h-12 inline-flex items-center justify-center rounded-[2px] text-base font-bold shadow-md transition-all hover:brightness-95"
                     style={{ backgroundColor: ACCENT, color: INK }}
                   >
+                    {p.cta}
+                  </button>
+                ) : (
+                  <button className="w-full h-14 inline-flex items-center justify-center rounded-[2px] border-2 border-white/30 px-10 text-base font-semibold text-white transition-all hover:bg-white hover:text-[#d08a39]">
                     {p.cta}
                   </button>
                 )}
@@ -574,10 +636,8 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
             Don&apos;t let competitors get there first. Start finding and converting your ideal customers today.
           </p>
           <div className="mb-14">
-            <span
-              className="inline-block rounded-[2px] border border-white/10 bg-white/[0.03] px-6 py-7 text-lg font-semibold"
-              style={{ color: ACCENT }}
-            >
+            <span className="inline-flex items-center gap-3 rounded-[2px] border border-white/10 bg-white/[0.03] px-6 py-7 text-lg font-semibold text-white">
+              <Ico className="w-6 h-6" style={{ color: ACCENT }}>{I.clock}</Ico>
               Limited Time: Get 50% off your first month
             </span>
           </div>
@@ -596,15 +656,15 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
       {/* Footer — warm brown #2a231d */}
       <footer className="border-t border-white/10 py-16" style={{ backgroundColor: FOOT_BG }}>
         <div className="mx-auto max-w-[1400px] px-6">
-          <div className="grid gap-8 lg:grid-cols-6 mb-14">
-            <div className="lg:col-span-2 space-y-6">
-              <a href="#" className="flex items-center gap-3">
+          <div className="grid gap-8 lg:grid-cols-6 mb-14 text-center md:text-left">
+            <div className="lg:col-span-2 space-y-6 flex flex-col items-center md:items-start">
+              <a href="#" className="flex items-center gap-3 justify-center md:justify-start">
                 <span className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl" style={{ backgroundColor: ACCENT }}>
                   AI
                 </span>
                 <span className="text-xl font-bold text-white">LeadGen</span>
               </a>
-              <p className="text-white/70 leading-relaxed max-w-md">
+              <p className="text-white/70 leading-relaxed max-w-md mx-auto md:mx-0">
                 AI LeadGen finds and converts your ideal customers automatically. Stop wasting time on manual prospecting and start growing.
               </p>
               <GoldBtn size="sm">Start Free Trial</GoldBtn>
@@ -624,7 +684,7 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
               </div>
             ))}
           </div>
-          <div className="border-t border-white/10 pt-[34px] flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="border-t border-white/10 pt-[34px] flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 text-center">
             <p className="text-sm text-white/60">© 2024 AI LeadGen. All rights reserved.</p>
             <div className="flex gap-6">
               <a href="#" aria-label="Twitter" className="text-white/60 hover:text-white transition-colors">
