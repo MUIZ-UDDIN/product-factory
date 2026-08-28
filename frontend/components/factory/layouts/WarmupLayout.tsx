@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode, type CSSProperties } from "react";
+import { useState, useEffect, type ReactNode, type CSSProperties } from "react";
 import { type AppConfig } from "@/lib/registry";
 import { useBrain } from "@/components/factory/useBrain";
 import StreamBox from "@/components/factory/StreamBox";
@@ -16,9 +16,9 @@ const DESTRUCTIVE = "rgb(124, 29, 29)";
 const GRAD = "linear-gradient(135deg,#ffcc44 0%,#ffcc44 30%,#ef8f00 100%)";
 const GTEXT_GRAD = "linear-gradient(135deg,#ffcc44 0%,#f59f0a 100%)";
 const SH_GLOW = "0 0 60px hsl(45 100% 60% / .4)";
-const SH_CARD = "0 12px 40px hsl(222 47% 1% / .9)";
 const SH_ELEGANT = "0 25px 80px hsl(222 47% 1% / .8)";
 const SH_PREMIUM = "0 30px 100px hsl(45 100% 60% / .2)";
+const SH_POPULAR = "0 0 0 2px rgb(255, 204, 51), 0 30px 100px 0 rgba(255, 204, 51, 0.2)";
 
 const GTEXT: CSSProperties = { backgroundImage: GTEXT_GRAD, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" };
 
@@ -54,7 +54,17 @@ function Star({ className = "w-6 h-6" }: { className?: string }) {
 
 function GoldBtn({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <button className={`inline-flex h-14 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-10 text-lg font-bold transition-all duration-300 hover:scale-105 ${className}`} style={{ backgroundImage: GRAD, color: INK, boxShadow: SH_GLOW }}>
+    <button className={`inline-flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-6 text-base font-bold transition-all duration-300 hover:scale-105 md:h-14 md:px-10 md:text-lg ${className}`} style={{ backgroundImage: GRAD, color: INK, boxShadow: SH_GLOW }}>
+      {children}
+    </button>
+  );
+}
+
+function OutlineBtn({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return (
+    <button
+      className={`inline-flex h-12 items-center justify-center whitespace-nowrap rounded-lg border border-[rgba(255,204,51,0.3)] px-6 text-base font-bold text-[rgb(248,250,252)] transition-all duration-300 hover:border-[rgba(255,204,51,0.6)] hover:bg-[rgb(255,204,51)] hover:text-[rgb(17,24,39)] md:h-14 md:px-10 md:text-lg ${className}`}
+    >
       {children}
     </button>
   );
@@ -135,13 +145,26 @@ const PLATFORMS = ["Instagram", "LinkedIn", "TikTok", "Facebook", "YouTube", "Th
 export default function WarmupLayout({ app }: { app: AppConfig }) {
   const { output, loading } = useBrain(app.id);
   const [open, setOpen] = useState<number | null>(null);
+  const [plat, setPlat] = useState<Set<string>>(new Set());
 
-  const borderCard: CSSProperties = { border: `1px solid ${BORDER}` };
+  useEffect(() => {
+    const b = document.body;
+    const prev = b.style.cssText;
+    b.style.backgroundImage = "linear-gradient(135deg, rgb(3, 4, 7) 0%, rgb(12, 12, 28) 50%, rgb(31, 17, 59) 100%)";
+    b.style.backgroundColor = "transparent";
+    return () => {
+      b.style.cssText = prev;
+    };
+  }, []);
+
+  const CARD_BG = "linear-gradient(135deg, rgb(5, 8, 15) 0%, rgb(14, 19, 27) 100%)";
+  const ELEGANT: CSSProperties = { backgroundImage: CARD_BG, boxShadow: SH_ELEGANT };
 
   return (
     <div
       className="min-h-screen overflow-x-hidden antialiased"
       style={{
+        backgroundImage: "linear-gradient(135deg, rgb(3, 4, 7) 0%, rgb(12, 12, 28) 50%, rgb(31, 17, 59) 100%)",
         backgroundColor: BG,
         color: FG,
         fontFamily: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
@@ -149,22 +172,25 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
     >
       {/* Hero */}
       <section
-        className="relative flex min-h-screen items-center justify-start px-4 py-32"
+        className="relative flex min-h-screen items-center justify-start px-4 py-32 max-sm:justify-center"
         style={{ backgroundImage: `url(${IMG}/header-bg-Bsa7F9xa.png)`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}
       >
+        <div className="absolute inset-0 max-sm:bg-black/50" />
         <div className="relative z-10 mx-auto w-full max-w-7xl">
-          <div className="mr-auto w-full max-w-lg pr-8 sm:w-2/5">
+          <div className="mr-auto w-full max-w-lg pr-8 sm:w-[474px] max-sm:mx-auto max-sm:w-full max-sm:px-0 max-sm:text-center">
             <div className="space-y-8">
-              <h1 className="text-4xl font-bold leading-tight lg:text-5xl xl:text-6xl">
+              <h1 className="text-4xl font-bold leading-none lg:text-5xl xl:text-6xl max-sm:text-center">
                 <span style={GTEXT}>{HERO_H}</span>
               </h1>
-              <p className="text-lg leading-relaxed lg:text-xl" style={{ color: MUTED }}>
+              <p className="text-lg leading-relaxed lg:text-xl max-sm:text-center" style={{ color: MUTED }}>
                 {HERO_SUB}
               </p>
-              <GoldBtn>
-                Get My Accounts Ready
-                <span className="ml-3 text-xl">→</span>
-              </GoldBtn>
+              <div className="flex max-sm:justify-center">
+                <GoldBtn>
+                  Get My Accounts Ready
+                  <span className="ml-3 text-xl">→</span>
+                </GoldBtn>
+              </div>
             </div>
           </div>
         </div>
@@ -190,16 +216,16 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
           <div className="grid items-center gap-16 lg:grid-cols-2">
             <div>
               <div className="mb-16">
-                <h2 className="mb-8 text-5xl font-bold leading-none lg:text-6xl" style={{ color: FG }}>
+                <h2 className="mb-8 text-center text-5xl font-bold leading-none lg:text-left lg:text-6xl" style={{ color: FG }}>
                   The <span style={GTEXT}>Problem</span>
                 </h2>
-                <p className="mb-12 text-2xl" style={{ color: MUTED }}>
+                <p className="mb-12 text-center text-2xl lg:text-left" style={{ color: MUTED }}>
                   {PROBLEM_SUB}
                 </p>
               </div>
               <div className="mb-12 space-y-6">
                 {PROBLEM_ITEMS.map((t) => (
-                  <div key={t} className="flex items-start gap-6 rounded-2xl p-6" style={{ ...borderCard, boxShadow: SH_CARD }}>
+                  <div key={t} className="flex items-start gap-6 rounded-2xl p-6" style={ELEGANT}>
                     <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: "rgba(124,29,29,0.2)", color: DESTRUCTIVE }}>
                       <Ico className="h-6 w-6">{X}</Ico>
                     </div>
@@ -210,7 +236,7 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
                 ))}
               </div>
               <div className="text-center lg:text-left">
-                <p className="text-3xl font-bold" style={GTEXT}>
+                <p className="text-center text-3xl font-bold lg:text-left" style={GTEXT}>
                   {PROBLEM_CLOSER}
                 </p>
               </div>
@@ -227,13 +253,13 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
       </section>
 
       {/* What You Get */}
-      <section className="relative px-4 py-20" style={{ minHeight: 1351 }}>
+      <section className="relative px-4 py-20">
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "linear-gradient(135deg, hsl(222 47% 4%), hsl(222 47% 8%))" }} />
         <div className="relative z-10 mx-auto max-w-6xl">
           <Head before="What You" grad="Get" />
           <div className="mb-20 grid gap-10 md:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
-              <div key={f.t} className="group transform overflow-hidden rounded-2xl p-10 transition-all duration-300 hover:scale-105" style={{ ...borderCard, boxShadow: SH_CARD }}>
+                <div key={f.t} className="group transform overflow-hidden rounded-2xl p-10 transition-all duration-300 hover:scale-105" style={ELEGANT}>
                 <div className="relative mb-6 h-48 w-full overflow-hidden rounded-lg">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={f.img} alt={f.t} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
@@ -295,7 +321,7 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <div className="space-y-6">
               {WHY.map((w) => (
-                <div key={w} className="flex items-start gap-4 rounded-xl p-6" style={{ ...borderCard, boxShadow: SH_CARD }}>
+                <div key={w} className="flex items-start gap-4 rounded-xl p-6" style={ELEGANT}>
                   <Ico className="mt-1 h-6 w-6 flex-shrink-0" style={{ color: "hsl(45 100% 60%)" }}>
                     {CIRCLE_CHECK}
                   </Ico>
@@ -322,8 +348,8 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
             {PLANS.map((p) => (
               <div
                 key={p.name}
-                className="relative transform rounded-3xl p-10 transition-all duration-300 hover:scale-105"
-                style={{ ...borderCard, boxShadow: SH_CARD, minHeight: 683 }}
+                className="relative transform flex flex-col rounded-3xl p-10 transition-all duration-300 hover:scale-105"
+                style={{ backgroundImage: CARD_BG, boxShadow: p.popular ? SH_POPULAR : SH_ELEGANT, minHeight: 714 }}
               >
                 {p.popular && (
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2">
@@ -363,7 +389,11 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
                     </li>
                   ))}
                 </ul>
-                <GoldBtn className="w-full">{p.cta}</GoldBtn>
+                {p.popular ? (
+                  <GoldBtn className="w-full mt-auto">{p.cta}</GoldBtn>
+                ) : (
+                  <OutlineBtn className="w-full mt-auto">{p.cta}</OutlineBtn>
+                )}
               </div>
             ))}
           </div>
@@ -386,12 +416,12 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
       </section>
 
       {/* Social Proof */}
-      <section className="px-4 py-32" style={{ minHeight: 704 }}>
+      <section className="px-4 py-32">
         <div className="mx-auto max-w-6xl">
           <Head before="Social" grad="Proof" />
           <div className="grid gap-10 lg:grid-cols-3">
             {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="transform rounded-3xl p-10 transition-all duration-300 hover:scale-105" style={{ ...borderCard, boxShadow: SH_CARD }}>
+              <div key={t.name} className="transform rounded-3xl p-10 transition-all duration-300 hover:scale-105" style={ELEGANT}>
                 <blockquote className="mb-8 text-xl italic leading-relaxed" style={{ color: FG }}>
                   &ldquo;{t.q}&rdquo;
                 </blockquote>
@@ -418,15 +448,14 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
       <section className="px-4 py-20">
         <div className="mx-auto max-w-4xl">
           <Head before="Frequently Asked" grad="Questions" />
-          <div className="rounded-3xl p-12" style={{ ...borderCard, boxShadow: SH_CARD }}>
+          <div className="rounded-3xl p-12" style={ELEGANT}>
             <div className="space-y-6">
               {FAQS.map((f, i) => (
                 <div key={f.q} className="border-b" style={{ borderColor: "hsl(45 100% 60% / 0.2)" }}>
                   <button
                     type="button"
                     onClick={() => setOpen(open === i ? null : i)}
-                    className="flex w-full items-center justify-between py-6 text-left text-xl font-bold transition-colors hover:text-[#e9b949]"
-                    style={{ color: open === i ? "#e9b949" : FG }}
+                      className={`flex w-full items-center justify-between gap-4 py-6 text-left text-lg font-bold transition-colors hover:text-[#ffcc33] md:text-xl ${open === i ? "text-[#ffcc33]" : ""}`}
                   >
                     {f.q}
                     <Ico className={`h-4 w-4 shrink-0 transition-transform duration-200 ${open === i ? "rotate-180" : ""}`}>
@@ -456,40 +485,58 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
               Fresh, compliant, and ready to grow.
             </p>
           </div>
-          <div className="rounded-3xl p-12" style={{ ...borderCard, boxShadow: SH_CARD, minHeight: 931 }}>
+            <div className="rounded-3xl p-12" style={ELEGANT}>
             <h3 className="mb-12 text-center text-3xl font-bold" style={{ color: FG }}>
               Tell us where to build your accounts
             </h3>
             <form className="space-y-9" onSubmit={(e) => e.preventDefault()}>
-              <div className="grid gap-x-8 gap-y-10 md:grid-cols-2">
+              <div className="grid gap-8 md:grid-cols-2">
                 <div className="space-y-4">
                   <label className="block text-lg font-medium" style={{ color: FG }}>Full Name</label>
-                  <input type="text" placeholder="Your full name" className="w-full rounded-lg px-3 py-2 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
+                  <input type="text" placeholder="Your full name" className="w-full h-14 rounded-md px-3 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
                 </div>
                 <div className="space-y-4">
                   <label className="block text-lg font-medium" style={{ color: FG }}>Work Email</label>
-                  <input type="email" placeholder="your@company.com" className="w-full rounded-lg px-3 py-2 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
+                  <input type="email" placeholder="your@company.com" className="w-full h-14 rounded-md px-3 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
                 </div>
                 <div className="space-y-4">
                   <label className="block text-lg font-medium" style={{ color: FG }}>Brand/Company</label>
-                  <input type="text" placeholder="Your brand name" className="w-full rounded-lg px-3 py-2 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
+                  <input type="text" placeholder="Your brand name" className="w-full h-14 rounded-md px-3 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
                 </div>
                 <div className="space-y-4">
                   <label className="block text-lg font-medium" style={{ color: FG }}>Domain</label>
-                  <input type="text" placeholder="yourwebsite.com" className="w-full rounded-lg px-3 py-2 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
+                  <input type="text" placeholder="yourwebsite.com" className="w-full h-14 rounded-md px-3 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
                 </div>
               </div>
               <div>
                 <label className="mb-3 block text-lg font-medium" style={{ color: FG }}>
                   Platforms (select all that apply)
                 </label>
-                <div className="flex flex-wrap gap-x-5 gap-y-2">
+                <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
                   {PLATFORMS.map((p) => (
-                    <label key={p} className="flex cursor-pointer items-center gap-2">
-                      <input type="checkbox" className="h-4 w-4 rounded" style={{ accentColor: "hsl(45 100% 60%)" }} />
-                      <span className="text-sm" style={{ color: MUTED }}>
-                        {p}
+                    <label key={p} className="flex cursor-pointer items-center gap-3 text-base" style={{ color: FG }}>
+                      <input
+                        type="checkbox"
+                        className="sr-only"
+                        checked={plat.has(p)}
+                        onChange={() =>
+                          setPlat((prev) => {
+                            const n = new Set(prev);
+                            if (n.has(p)) n.delete(p);
+                            else n.add(p);
+                            return n;
+                          })
+                        }
+                      />
+                      <span
+                        className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 transition-colors"
+                        style={{ borderColor: "rgb(255, 204, 51)", backgroundColor: plat.has(p) ? "rgb(255, 204, 51)" : "transparent" }}
+                      >
+                        {plat.has(p) && (
+                          <Ico className="h-3 w-3" style={{ color: "rgb(17, 24, 39)" }}>{CHECK}</Ico>
+                        )}
                       </span>
+                      <span>{p}</span>
                     </label>
                   ))}
                 </div>
@@ -498,9 +545,11 @@ export default function WarmupLayout({ app }: { app: AppConfig }) {
                 <label className="mb-2 block text-lg font-medium" style={{ color: FG }}>
                   Notes (Optional)
                 </label>
-                <textarea rows={4} placeholder="Any specific requirements or questions..." className="w-full min-h-[96px] resize-none rounded-lg px-3 py-2 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
+                  <textarea rows={4} placeholder="Any specific requirements or questions..." className="w-full min-h-[96px] resize-y rounded-md px-3 py-2 text-sm" style={{ border: `1px solid ${BORDER}`, backgroundColor: BG, color: FG }} />
               </div>
-              <GoldBtn className="w-full">Start My Setup</GoldBtn>
+              <div className="flex justify-center">
+                <GoldBtn className="h-12 px-10 md:h-16 md:px-16">Start Setup</GoldBtn>
+              </div>
               <p className="text-center text-xs" style={{ color: MUTED }}>
                 We&apos;ll only use this info to set up your accounts.
               </p>
