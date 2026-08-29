@@ -220,6 +220,27 @@ function CurrencySelect({
   );
 }
 
+/* App Store / Google Play style badges (CSS-built; no external assets). */
+function StoreBadge({ store }: { store: "apple" | "google" }) {
+  return (
+    <span className="inline-flex h-11 items-center gap-2.5 rounded-xl border border-white/25 bg-black/40 px-4 text-white backdrop-blur-sm transition-transform duration-300 hover:scale-105 sm:h-14 sm:gap-3 sm:px-5">
+      {store === "apple" ? (
+        <svg width="22" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+        </svg>
+      ) : (
+        <svg width="22" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3.6 1.84 13.6 12l-10 10.16c-.37-.18-.6-.57-.6-1.06V2.9c0-.49.23-.88.6-1.06zM14.96 13.32l2.4 2.4-10.56 6.1a1 1 0 0 1-.88.02l9.04-8.52zM20.92 11.2c.42.22.68.65.68 1.13 0 .49-.26.91-.68 1.13l-2.6 1.5-2.6-2.63 2.6-2.63 2.6 1.5zM6.8 1.13l10.56 6.1-2.4 2.4-8.16-8.5c.28-.05.55 0 .8.16z" />
+        </svg>
+      )}
+      <span className="flex flex-col leading-tight">
+        <span className="text-[8px] uppercase tracking-wide text-white/70 sm:text-[9px]">{store === "apple" ? "Download on the" : "Get it on"}</span>
+        <span className="text-sm font-semibold sm:text-base">{store === "apple" ? "App Store" : "Google Play"}</span>
+      </span>
+    </span>
+  );
+}
+
 function CheckItem({ text, onGradient }: { text: string; onGradient?: boolean }) {
   return (
     <li className="flex items-center gap-4">
@@ -318,17 +339,24 @@ export default function ConverterLayout({ app }: { app: AppConfig }) {
               <div className="flex flex-col justify-center gap-4 sm:flex-row lg:justify-start">
                 <a
                   href="#pricing"
-                  className="border-white/20 bg-white text-[#069eea] shadow-elegant hover:shadow-feature hover:scale-105 inline-flex h-16 items-center justify-center gap-2 rounded-xl border px-10 text-lg font-semibold whitespace-nowrap backdrop-blur-sm transition-all duration-500"
+                  className="border-white/20 bg-white text-[#069eea] shadow-elegant hover:shadow-feature hover:scale-105 inline-flex h-12 items-center justify-center gap-2 rounded-xl border px-6 text-base font-semibold whitespace-nowrap backdrop-blur-sm transition-all duration-500 sm:h-16 sm:px-10 sm:text-lg"
                 >
                   Get early access
                 </a>
                 <a
                   href="#how"
-                  className="border-white/30 bg-white/5 text-white backdrop-blur-md hover:border-white/40 hover:bg-white/10 inline-flex h-16 items-center justify-center gap-2 rounded-xl border-2 px-10 text-lg font-medium whitespace-nowrap transition-all duration-300"
+                  className="border-white/30 bg-white/5 text-white backdrop-blur-md hover:border-white/40 hover:bg-white/10 inline-flex h-12 items-center justify-center gap-2 rounded-xl border-2 px-6 text-base font-medium whitespace-nowrap transition-all duration-300 sm:h-16 sm:px-10 sm:text-lg"
                 >
                   See how it works
                 </a>
               </div>
+              <div className="flex flex-wrap justify-center gap-3 pt-2 lg:justify-start">
+                <StoreBadge store="apple" />
+                <StoreBadge store="google" />
+              </div>
+              <p className="pt-2 text-sm font-medium text-white/85">
+                A native app for iOS &amp; Android — offline rates, lock-screen widget included.
+              </p>
             </div>
             <div className="relative">
               <img
@@ -464,7 +492,7 @@ export default function ConverterLayout({ app }: { app: AppConfig }) {
               </div>
               <a
                 href="#pricing"
-                className="bg-gradient-hero text-white hover:shadow-elegant inline-flex h-14 items-center justify-center rounded-xl px-8 text-base font-semibold whitespace-nowrap transform transition-all duration-500 hover:-translate-y-1"
+                className="bg-gradient-hero text-white hover:shadow-elegant inline-flex h-11 items-center justify-center rounded-xl px-6 text-sm font-semibold whitespace-nowrap transform transition-all duration-500 hover:-translate-y-1 sm:h-14 sm:px-8 sm:text-base"
               >
                 Join the waitlist
               </a>
@@ -534,7 +562,7 @@ export default function ConverterLayout({ app }: { app: AppConfig }) {
                 </ul>
                 <a
                   href="#top"
-                  className="border-black/10 bg-white hover:bg-[#eaf6fc] inline-flex h-16 w-full items-center justify-center rounded-xl border px-10 text-lg font-semibold whitespace-nowrap transition-all duration-300"
+                  className="border-black/10 bg-white hover:bg-[#eaf6fc] inline-flex h-12 w-full items-center justify-center rounded-xl border px-6 text-base font-semibold whitespace-nowrap transition-all duration-300 sm:h-16 sm:px-10 sm:text-lg"
                 >
                   Get started
                 </a>
@@ -565,7 +593,7 @@ export default function ConverterLayout({ app }: { app: AppConfig }) {
                 </ul>
                 <a
                   href="#top"
-                  className="border-white/20 bg-white text-[#069eea] shadow-elegant hover:shadow-feature hover:scale-105 inline-flex h-16 w-full items-center justify-center rounded-xl border px-10 text-lg font-semibold whitespace-nowrap backdrop-blur-sm transition-all duration-500"
+                  className="border-white/20 bg-white text-[#069eea] shadow-elegant hover:shadow-feature hover:scale-105 inline-flex h-12 w-full items-center justify-center rounded-xl border px-6 text-base font-semibold whitespace-nowrap backdrop-blur-sm transition-all duration-500 sm:h-16 sm:px-10 sm:text-lg"
                 >
                   Get Pro
                 </a>
@@ -616,10 +644,14 @@ export default function ConverterLayout({ app }: { app: AppConfig }) {
             <p className="text-xl leading-relaxed text-white/90">We&apos;ll email you the TestFlight/Play link when it&apos;s live.</p>
             <a
               href="#pricing"
-              className="border-white/20 bg-white text-[#069eea] shadow-elegant hover:shadow-feature hover:scale-105 font-semibold backdrop-blur-sm transform inline-flex h-16 items-center justify-center rounded-xl border px-10 text-lg whitespace-nowrap transition-transform duration-300"
+              className="border-white/20 bg-white text-[#069eea] shadow-elegant hover:shadow-feature hover:scale-105 font-semibold backdrop-blur-sm transform inline-flex h-12 items-center justify-center rounded-xl border px-6 text-base whitespace-nowrap transition-transform duration-300 sm:h-16 sm:px-10 sm:text-lg"
             >
               Get early access
             </a>
+            <div className="flex flex-wrap justify-center gap-3 pt-4">
+              <StoreBadge store="apple" />
+              <StoreBadge store="google" />
+            </div>
           </div>
         </div>
         <p className="sr-only">{app.name}</p>
