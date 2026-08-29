@@ -42,9 +42,10 @@ function Ico({ children, className = "w-5 h-5", style }: { children: ReactNode; 
   );
 }
 
-function GoldBtn({ children, className = "", size = "lg" }: { children: ReactNode; className?: string; size?: "lg" | "sm" }) {
+function GoldBtn({ children, className = "", size = "lg", onClick }: { children: ReactNode; className?: string; size?: "lg" | "sm"; onClick?: () => void }) {
   return (
     <button
+      onClick={onClick}
       className={`inline-flex items-center justify-center whitespace-nowrap rounded-[2px] font-bold transition-all hover:brightness-95 ${
         size === "lg" ? "h-12 px-7 text-sm md:h-16 md:px-12 md:text-lg" : "h-9 px-4 text-xs md:h-11 md:px-6 md:text-sm font-semibold"
       } ${className}`}
@@ -54,6 +55,9 @@ function GoldBtn({ children, className = "", size = "lg" }: { children: ReactNod
     </button>
   );
 }
+
+const DM_PROMPT =
+  "Write a personalized cold DM for a prospect. Start with X/Twitter: choose a target, write a natural, personalized first message that references something specific about them, plus a follow-up and a CTA. Be specific, not spammy.";
 
 function OutlineBtn({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
@@ -200,7 +204,7 @@ const PERSONAS = [
 const WHY = [
   { icon: I.layers, t: "Complete Solution", d: "Other tools only listen OR automate DMs, we do both seamlessly." },
   { icon: I.sparkles, t: "Smart Personalization", d: "Personalized AI outreach that feels natural, never spammy." },
-  { icon: I.globe, t: "Multi-Platform", d: "Multi-platform support, reach customers wherever they hang out." },
+  { icon: I.globe, t: "Multi-Platform", d: "Start with X & Twitter — then expand to Instagram, LinkedIn, and more." },
   { icon: I.clock, t: "Time Savings", d: "Saves you 10+ hours a week in manual work." },
 ];
 
@@ -240,7 +244,7 @@ const FOOT_COLS = [
 /* Component --------------------------------------------------------------- */
 
 export default function ColdDmsLayout({ app }: { app: AppConfig }) {
-    const { output, loading } = useBrain(app.id);
+    const { output, loading, run } = useBrain(app.id);
     const [navOpen, setNavOpen] = useState(false);
 
   return (
@@ -340,8 +344,16 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
                 </p>
               </div>
               <div className="flex flex-wrap justify-center gap-3 md:gap-4 md:justify-start">
-                <GoldBtn>Start Free Trial</GoldBtn>
+                <GoldBtn onClick={() => run(DM_PROMPT)}>Start Free Trial</GoldBtn>
                 <OutlineBtn>Book a Demo</OutlineBtn>
+              </div>
+              <div className="flex flex-wrap justify-center gap-2 md:justify-start">
+                {["Now live on X & Twitter", "Instagram next", "LinkedIn in beta"].map((t) => (
+                  <span key={t} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-white/70">
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: ACCENT }} />
+                    {t}
+                  </span>
+                ))}
               </div>
               <div className="grid grid-cols-3 gap-3 text-center pt-4 md:flex md:flex-wrap md:justify-start md:gap-x-12 md:gap-y-6 md:text-left">
                 {HERO_STATS.map(([n, l]) => (
@@ -389,7 +401,7 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
             </div>
           </div>
           <div className="text-center">
-            <GoldBtn>See It In Action</GoldBtn>
+            <GoldBtn onClick={() => run(DM_PROMPT)}>See It In Action</GoldBtn>
           </div>
         </div>
       </section>
@@ -642,7 +654,7 @@ export default function ColdDmsLayout({ app }: { app: AppConfig }) {
             </span>
           </div>
           <div className="flex flex-wrap justify-center gap-4 mb-12">
-            <GoldBtn>Start Free Trial</GoldBtn>
+            <GoldBtn onClick={() => run(DM_PROMPT)}>Start Free Trial</GoldBtn>
             <OutlineBtn>Book a Demo</OutlineBtn>
           </div>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-base text-white/80">

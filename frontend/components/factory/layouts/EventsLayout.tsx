@@ -31,9 +31,10 @@ const SHADOW_GLOW = "0 0 40px rgba(34, 78, 161, 0.3)";
 const PRIMARY = "hsl(220 91% 32%)";
 
 /* Gradient pill CTA (ref: shadcn base + from-accent to-accent-hover shadow-glow). */
-function GradButton({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function GradButton({ children, className = "", onClick }: { children: React.ReactNode; className?: string; onClick?: () => void }) {
   return (
     <button
+      onClick={onClick}
       className={`inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-sm md:text-xl text-white h-12 md:h-16 px-8 md:px-12 rounded-xl border border-white/20 transition-transform duration-300 hover:scale-105 ${className}`}
       style={{ backgroundImage: "linear-gradient(to right, hsl(16 82% 57%), hsl(16 82% 47%))", boxShadow: SHADOW_GLOW }}
     >
@@ -41,6 +42,9 @@ function GradButton({ children, className = "" }: { children: React.ReactNode; c
     </button>
   );
 }
+
+const EVENT_PROMPT =
+  "Recommend a relevant event for this week: given preferences and filters (category, city, budget), pick the best event, write a short AI summary, include the link, and explain why it matches. Be specific.";
 
 /* Full-width gradient band with centered container + black veil overlay. */
 function Band({
@@ -123,7 +127,7 @@ const TESTIMONIALS = [
 ];
 
 export default function EventsLayout({ app }: { app: AppConfig }) {
-  const { loading, output } = useBrain(app.id);
+  const { loading, output, run } = useBrain(app.id);
 
   return (
     <div
@@ -152,7 +156,7 @@ export default function EventsLayout({ app }: { app: AppConfig }) {
             one clear notification.
           </p>
           <div className="text-center">
-            <GradButton className="mb-16">👉 Join the Waitlist</GradButton>
+            <GradButton className="mb-16" onClick={() => run(EVENT_PROMPT)}>👉 Get My Event Recommendations</GradButton>
           </div>
           <div className="ev-float">
             <img
@@ -199,8 +203,9 @@ export default function EventsLayout({ app }: { app: AppConfig }) {
             <span className={CLIP.cyan}>You get the signal.</span>
           </h2>
           <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-            Spotlight uses AI to continuously scan social media, flyers, and event platforms. When it finds
-            something new, you get one clean notification. That&apos;s it.
+            Tell Spotlight your preferences and filters once. Every week it scrapes social media, flyers, and
+            event platforms — then recommends the best matches with a short AI summary and the link, delivered
+            as one clean notification. That&apos;s it.
           </p>
         </div>
         <div className="ev-float mb-16">
@@ -342,7 +347,7 @@ export default function EventsLayout({ app }: { app: AppConfig }) {
             Join thousands of early users who never miss the events that matter. Be the first to experience
             effortless event discovery.
           </p>
-          <GradButton className="mb-8">👉 Get Early Access</GradButton>
+          <GradButton className="mb-8" onClick={() => run(EVENT_PROMPT)}>👉 Get My Event Recommendations</GradButton>
           <p className="text-white/70">No spam, just events. Unsubscribe anytime.</p>
           <div className="mt-16 ev-float">
             <div className="w-64 h-96 mx-auto bg-gradient-to-b from-white/20 to-white/10 rounded-[3rem] border border-white/30 backdrop-blur-xl relative">

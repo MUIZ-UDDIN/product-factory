@@ -7,8 +7,12 @@ import StreamBox from "@/components/factory/StreamBox";
 
 const IMG = "/automation";
 
+const WORKFLOW_PROMPT =
+  "Design a custom AI workflow for a business: identify the repetitive process or the outreach to potential clients to automate, the AI architecture, the tools it integrates with, and the expected ROI. Be specific.";
+
 const SERVICES = [
   { icon: "⚡", title: "Workflow Automation", desc: "End to end process automation that eliminates manual tasks and human error" },
+  { icon: "✉", title: "Outreach Automation", desc: "AI that researches prospects, personalizes messaging, and follows up automatically to win new clients" },
   { icon: "◈", title: "AI Agent Development", desc: "Custom intelligent agents that handle complex decision making at scale" },
   { icon: "⟐", title: "Data Pipeline Design", desc: "Automated data flows that connect your systems and surface insights in real time" },
   { icon: "✦", title: "LLM Integration", desc: "Strategic deployment of large language models tailored to your domain and data" },
@@ -49,6 +53,12 @@ const CASE_STUDIES = [
     title: "Before: Compliance reviews requiring a full time team of 6",
     desc: "A financial services firm spent millions annually on manual compliance review. We built an AI system that monitors transactions in real time, flags anomalies, and generates audit ready reports automatically.",
     after: "After: Automated compliance checks running continuously with 99.7% accuracy",
+  },
+  {
+    img: `${IMG}/abstract-topo.jpg`,
+    title: "Before: Sales reps spending 20 hours a week on manual prospect outreach",
+    desc: "A B2B services firm relied on generic cold emails with a 3% reply rate. We built an AI outreach workflow that researches every prospect, personalizes the first touch, and nurtures follow-ups automatically.",
+    after: "After: AI-personalized outreach at 10x the volume with a 5x reply rate",
   },
 ];
 
@@ -232,7 +242,7 @@ function Reveal({ children, className = "", delay = 0 }: { children: ReactNode; 
 }
 
 export default function AutomationLayout({ app }: { app: AppConfig }) {
-  const { loading, output } = useBrain(app.id);
+  const { loading, output, run } = useBrain(app.id);
   const wwbRef = useRef<HTMLDivElement>(null);
 
   const scrollByCards = (dir: number) => {
@@ -254,6 +264,7 @@ export default function AutomationLayout({ app }: { app: AppConfig }) {
         </a>
         <a
           href="#contact"
+          onClick={() => run(WORKFLOW_PROMPT)}
           className="flex items-center gap-2.5 md:gap-3 bg-[#1366ec] hover:bg-[#1366ec]/90 transition-all duration-300 rounded-full pl-4 pr-2 py-1.5 md:pl-5 md:pr-2.5 md:py-2 hover:scale-[1.03]"
         >
           <div className="text-left leading-tight">
@@ -302,7 +313,8 @@ export default function AutomationLayout({ app }: { app: AppConfig }) {
             <span className="italic">built</span> for enterprise.
           </h1>
           <p className="mt-8 text-lg md:text-xl text-[#f2f2f2]/70 max-w-[480px] mx-auto leading-[1.4]">
-            We design and deploy AI automated systems that eliminate bottlenecks, reduce costs, and scale with your business.
+            We design and deploy AI workflows that automate repetitive business processes and outreach to
+            potential clients — eliminating bottlenecks, reducing costs, and scaling with you.
           </p>
         </div>
         <ScrollIndicator />
@@ -592,6 +604,7 @@ export default function AutomationLayout({ app }: { app: AppConfig }) {
             </p>
             <a
               href="#"
+              onClick={(e) => { e.preventDefault(); run(WORKFLOW_PROMPT); }}
               className="inline-flex items-center gap-2.5 md:gap-3 bg-[#1366ec] hover:bg-[#1366ec]/90 transition-colors text-white font-bold text-xs md:text-sm tracking-wide uppercase rounded-full px-7 py-3.5 md:px-10 md:py-5"
             >
               Book a Strategy Call <ArrowUpRight />

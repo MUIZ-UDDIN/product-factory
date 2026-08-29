@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { AppConfig } from "@/lib/registry";
+import { useBrain } from "@/components/factory/useBrain";
+import StreamBox from "@/components/factory/StreamBox";
 
 /* Product 3 — Starbiz ("Create Your Own Idol", /3).
    Pixel clone of https://create-your-own-idol.lovable.app.
@@ -152,7 +154,22 @@ function CheckDot() {
   );
 }
 
-export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
+const DESIGN_PROMPT =
+  "Design a brand-new AI K-pop idol: stage name, debut concept, visual style, voice, personality, and fan engagement strategy. Be specific, not generic.";
+const MEMBER_PROMPT =
+  "Create detailed AI K-pop group members: appearance, voice, personality, role, and backstory for each member of a new group.";
+const INTERACT_PROMPT =
+  "Write a fan-interaction strategy for an AI K-pop idol: how it replies to DMs, hosts live Q&As, and grows its audience on Instagram like an AI influencer. Be specific.";
+
+const INTERACT_FEATURES = [
+  { title: "Replies in your idol's voice", desc: "Personality-locked AI that sounds exactly like them." },
+  { title: "Lives on Instagram & TikTok", desc: "Debuts like the AI influencers fans already follow." },
+  { title: "Remembers every fan", desc: "Never loses context, even across thousands of DMs." },
+  { title: "Moderated by you", desc: "You approve the tone, the topics, and the brand." },
+];
+
+export default function SocialIdolLayout({ app }: { app: AppConfig }) {
+  const { loading, output, run } = useBrain(app.id);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -276,7 +293,7 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
               videos, run live interviews, then launch to the world.
             </p>
             <div className="animate-fade-in-up stagger-4 flex flex-wrap justify-center gap-5 lg:justify-start">
-              <button className="btn-primary px-10 py-5">Enter the Studio</button>
+              <button className="btn-primary px-10 py-5" onClick={() => run(DESIGN_PROMPT)}>Enter the Studio</button>
               <button className="btn-ghost-white px-10 py-5">Watch Demo</button>
             </div>
           </div>
@@ -430,7 +447,7 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
                 </div>
               ))}
             </div>
-            <button className="btn-primary px-9 py-4">Design Your Members</button>
+            <button className="btn-primary px-9 py-4" onClick={() => run(MEMBER_PROMPT)}>Design Your Members</button>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="aspect-square overflow-hidden border border-white/10">
@@ -510,6 +527,92 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- Talk to your idol ---------------- */}
+      <section className="relative px-6 py-28 md:px-10">
+        <div className="glow-coral -right-24 top-1/3 h-[420px] w-[420px] bg-accent opacity-20" />
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-2">
+          {/* Instagram-style DM mockup */}
+          <div className="mx-auto w-full max-w-sm">
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-card shadow-glass-lg">
+              <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
+                <img
+                  src="/starbiz/member-1.jpg"
+                  alt="KAIRO"
+                  className="h-10 w-10 rounded-full object-cover ring-2 ring-primary/40"
+                />
+                <div>
+                  <p className="font-700 text-sm tracking-wide">KAIRO</p>
+                  <p className="eyebrow text-primary">Active now</p>
+                </div>
+                <svg className="ml-auto" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M5 12h.01M12 12h.01M19 12h.01" />
+                </svg>
+              </div>
+              <div className="space-y-3 px-4 py-5">
+                <div className="flex justify-start">
+                  <div className="max-w-[80%] rounded-2xl rounded-tl-sm bg-white/10 px-3.5 py-2 text-sm">
+                    KAIRO! Your new single is literally on repeat 🔥🔥
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-primary/80 px-3.5 py-2 text-sm text-background">
+                    Hehe thank you!! Which part hits hardest for you?
+                  </div>
+                </div>
+                <div className="flex justify-start">
+                  <div className="max-w-[80%] rounded-2xl rounded-tl-sm bg-white/10 px-3.5 py-2 text-sm">
+                    The chorus at 0:42 — it&apos;s been my alarm all week
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-primary/80 px-3.5 py-2 text-sm text-background">
+                    That&apos;s my favorite part too. Want me to make a reply video for you? 🎧
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 border-t border-white/10 px-4 py-3">
+                <input
+                  placeholder="Message KAIRO..."
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/50"
+                />
+                <span className="eyebrow text-primary">Send</span>
+              </div>
+            </div>
+            <p className="eyebrow mt-4 text-center text-muted-foreground">Every reply written by your AI idol, live.</p>
+          </div>
+
+          {/* Copy */}
+          <div className="space-y-8">
+            <div className="space-y-4 text-center md:text-left">
+              <p className="eyebrow text-primary">Fan Interaction</p>
+              <h2 className="text-display text-6xl md:text-7xl">
+                Your idol
+                <br />
+                talks back.
+              </h2>
+            </div>
+            <p className="max-w-md text-lg leading-relaxed text-muted-foreground">
+              Fans don&apos;t just watch — they talk. Your AI idol replies to DMs, hosts live Q&amp;As, and answers
+              every comment in their own voice. On Instagram, TikTok, or your own app. 24/7, in any language.
+            </p>
+            <div className="space-y-3">
+              {INTERACT_FEATURES.map((f) => (
+                <div key={f.title} className="flex items-start gap-3">
+                  <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                  <div>
+                    <p className="font-700 text-sm">{f.title}</p>
+                    <p className="text-sm text-muted-foreground">{f.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="btn-primary px-9 py-4" onClick={() => run(INTERACT_PROMPT)}>
+              Run a Fan Interview
+            </button>
           </div>
         </div>
       </section>
@@ -634,7 +737,7 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
           <p className="text-lg text-muted-foreground">
             Join 50,000+ creators worldwide building the next generation of music artists.
           </p>
-          <button className="btn-primary px-14 py-5">Enter the Studio</button>
+          <button className="btn-primary px-14 py-5" onClick={() => run(DESIGN_PROMPT)}>Enter the Studio</button>
         </div>
       </section>
 
@@ -663,6 +766,13 @@ export default function SocialIdolLayout({ app: _app }: { app: AppConfig }) {
           <p className="eyebrow text-muted-foreground/60">&copy; 2026 Starbiz</p>
         </div>
       </footer>
+
+      {/* AI Output panel — "create / interact" generates a fresh idol persona */}
+      {(loading || output) && (
+        <div className="fixed bottom-4 left-1/2 z-50 w-[min(720px,92vw)] -translate-x-1/2">
+          <StreamBox app={app} output={output} loading={loading} />
+        </div>
+      )}
     </div>
   );
 }
