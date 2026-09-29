@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { AppConfig } from "@/lib/registry";
-import { CURRENCIES, convert, formatMoney, formatRate, getCurrency } from "@/lib/currencies";
+import { CURRENCIES, convertAtRates, formatMoney, formatRateAtRates, getCurrency } from "@/lib/currencies";
 
 /* ---------- Lucide-style inline icons (paths from the reference site) ---------- */
 
@@ -200,23 +200,50 @@ function CurrencySelect({
   onChange: (v: string) => void;
 }) {
   const cur = getCurrency(value);
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const options = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    return normalized
+      ? CURRENCIES.filter((currency) => `${currency.code} ${currency.name}`.toLowerCase().includes(normalized))
+      : CURRENCIES;
+  }, [query]);
+
+  useEffect(() => {
+    function closeOnOutside(event: MouseEvent) {
+      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", closeOnOutside);
+    return () => document.removeEventListener("mousedown", closeOnOutside);
+  }, []);
+
+  useEffect(() => {
+    if (open) window.requestAnimationFrame(() => searchRef.current?.focus());
+  }, [open]);
+
+  function choose(code: string) {
+    onChange(code);
+    setOpen(false);
+    setQuery("");
+  }
+
   return (
-    <label className="flex items-center gap-2 rounded-xl border border-black/10 bg-white px-3 py-2">
-      <FlagBadge code={cur.code} size="md" />
+    <div ref={containerRef} className="relative">
       <span className="sr-only">{label}</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-label={label}
-        className="flex-1 cursor-pointer appearance-none bg-transparent text-base font-semibold text-[#0c141d] outline-none"
-      >
-        {CURRENCIES.map((c) => (
-          <option key={c.code} value={c.code}>
-            {c.code} · {c.name}
-          </option>
-        ))}
-      </select>
-    </label>
+      <button type="button" aria-label={label} aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((current) => !current)} onKeyDown={(event) => { if (event.key === "Escape") setOpen(false); }} className={`group flex w-full items-center gap-2 rounded-xl border bg-white px-3 py-2 text-left transition-[border-color,box-shadow] duration-200 ease-out ${open ? "border-[#069eea] shadow-[0_0_0_3px_rgba(6,158,234,0.12)]" : "border-black/10 hover:border-[#069eea]/50"}`}>
+        <FlagBadge code={cur.code} size="md" />
+        <span className="min-w-0 flex-1"><span className="block text-base font-semibold text-[#0c141d]">{cur.code}</span><span className="block truncate text-[11px] font-medium text-black/45">{cur.name}</span></span>
+        <Icon name="chevronDown" className={`h-4 w-4 shrink-0 text-black/45 transition-transform duration-200 ease-out ${open ? "rotate-180 text-[#069eea]" : "group-hover:text-[#069eea]"}`} />
+      </button>
+      <div aria-hidden={!open} className={`absolute inset-x-0 top-[calc(100%+8px)] z-30 origin-top overflow-hidden rounded-2xl border border-black/10 bg-white p-2 shadow-[0_18px_45px_rgba(12,20,29,0.18)] transition-[opacity,transform] duration-200 ease-out ${open ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none -translate-y-1 scale-[0.985] opacity-0"}`}>
+        <div className="relative mb-1"><input ref={searchRef} value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); setOpen(false); } }} placeholder="Search currency" aria-label={`Search ${label.toLowerCase()}`} className="h-10 w-full rounded-xl bg-[#f5f9fc] px-3 text-sm font-medium text-[#0c141d] outline-none ring-1 ring-transparent transition focus:bg-white focus:ring-[#069eea]/30" /></div>
+        <div role="listbox" aria-label={label} className="max-h-56 space-y-0.5 overflow-y-auto pr-0.5">
+          {options.length > 0 ? options.map((currency) => <button type="button" role="option" aria-selected={currency.code === value} key={currency.code} onClick={() => choose(currency.code)} className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left transition-colors duration-150 ease-out ${currency.code === value ? "bg-[#eaf6fc]" : "hover:bg-[#f5f9fc]"}`}><FlagBadge code={currency.code} size="sm" /><span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-[#0c141d]">{currency.code}</span><span className="block truncate text-[11px] text-black/45">{currency.name}</span></span>{currency.code === value && <Icon name="check" className="h-4 w-4 text-[#069eea]" />}</button>) : <p className="px-3 py-4 text-center text-xs font-medium text-black/45">No currency found</p>}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -262,9 +289,62 @@ function ConverterPhone() {
   const [amount, setAmount] = useState("100");
   const [from, setFrom] = useState("USD");
   const [to, setTo] = useState("JPY");
+  const [rates, setRates] = useState<Record<string, number>>({});
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [message, setMessage] = useState("Ready to convert");
+  const [history, setHistory] = useState<Array<{ amount: number; from: string; to: string; result: number }>>([]);
 
   const numeric = useMemo(() => parseFloat(amount.replace(/[^0-9.]/g, "")) || 0, [amount]);
-  const result = convert(numeric, from, to);
+  const result = convertAtRates(numeric, from, to, rates);
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem("simplyconvert-history");
+      if (stored) setHistory(JSON.parse(stored));
+    } catch {
+      // Local storage is optional, so the converter remains usable if it is blocked.
+    }
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    async function refreshRates() {
+      setIsRefreshing(true);
+      try {
+        const response = await fetch(`/api/rates?base=${from}`, { cache: "no-store" });
+        const payload = (await response.json()) as { rates?: Record<string, number>; updatedAt?: string | null; fallback?: boolean };
+        if (active && payload.rates) {
+          setRates(payload.rates);
+          setUpdatedAt(payload.updatedAt ?? null);
+          setMessage(payload.fallback ? "Using the last known rates" : "Rates updated just now");
+        }
+      } catch {
+        if (active) setMessage("Offline mode: using cached rates");
+      } finally {
+        if (active) setIsRefreshing(false);
+      }
+    }
+    void refreshRates();
+    return () => {
+      active = false;
+    };
+  }, [from]);
+
+  function saveConversion() {
+    if (!numeric) {
+      setMessage("Enter an amount first");
+      return;
+    }
+    const next = [{ amount: numeric, from, to, result }, ...history.filter((item) => !(item.from === from && item.to === to && item.amount === numeric))].slice(0, 3);
+    setHistory(next);
+    try {
+      window.localStorage.setItem("simplyconvert-history", JSON.stringify(next));
+    } catch {
+      // Recent conversions still remain available for the current session.
+    }
+    setMessage("Saved to recent conversions");
+  }
 
   return (
     <div className="relative mx-auto w-full max-w-[320px]">
@@ -309,12 +389,33 @@ function ConverterPhone() {
                 {getCurrency(to).symbol}
                 {formatMoney(result, to)}
               </p>
-              <p className="mt-1 text-xs font-medium text-black/45">{formatRate(from, to)}</p>
+              <p className="mt-1 text-xs font-medium text-black/45">{formatRateAtRates(from, to, rates)}</p>
             </div>
 
-            <button className="mt-4 w-full cursor-pointer rounded-xl bg-[#069eea] py-3 text-base font-semibold text-white transition-opacity hover:opacity-90 active:scale-[0.98]">
-              Convert
+            <button onClick={saveConversion} className="mt-4 w-full cursor-pointer rounded-xl bg-[#069eea] py-3 text-base font-semibold text-white transition-opacity hover:opacity-90 active:scale-[0.98]">
+              {isRefreshing ? "Updating rates..." : "Save conversion"}
             </button>
+            <div className="mt-3 flex items-center justify-between gap-3 text-[11px] font-medium text-black/45">
+              <span>{message}</span>
+              <span>{updatedAt ? "Live rate" : "Fallback rate"}</span>
+            </div>
+            {history.length > 0 && (
+              <div className="mt-4 border-t border-black/10 pt-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-black/40">Recent</p>
+                <div className="mt-2 space-y-1.5">
+                  {history.map((item, index) => (
+                    <button
+                      key={`${item.from}-${item.to}-${item.amount}-${index}`}
+                      onClick={() => { setAmount(String(item.amount)); setFrom(item.from); setTo(item.to); }}
+                      className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs text-black/60 transition-colors hover:bg-[#eaf6fc]"
+                    >
+                      <span>{item.amount} {item.from} → {item.to}</span>
+                      <span className="font-bold text-[#0c141d]">{formatMoney(item.result, item.to)}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

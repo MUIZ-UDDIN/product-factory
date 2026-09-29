@@ -38,9 +38,13 @@ export function getCurrency(code: string): Currency {
 }
 
 export function convert(amount: number, from: string, to: string): number {
-  const f = getCurrency(from);
-  const t = getCurrency(to);
-  return (amount / f.rate) * t.rate;
+  return convertAtRates(amount, from, to);
+}
+
+export function convertAtRates(amount: number, from: string, to: string, rates?: Record<string, number>): number {
+  const f = rates?.[from] ?? getCurrency(from).rate;
+  const t = rates?.[to] ?? getCurrency(to).rate;
+  return f > 0 ? (amount / f) * t : 0;
 }
 
 export function formatMoney(value: number, code: string): string {
@@ -55,7 +59,11 @@ export function formatMoney(value: number, code: string): string {
 }
 
 export function formatRate(from: string, to: string): string {
-  const value = convert(1, from, to);
+  return formatRateAtRates(from, to);
+}
+
+export function formatRateAtRates(from: string, to: string, rates?: Record<string, number>): string {
+  const value = convertAtRates(1, from, to, rates);
   let fixed: string;
   if (value >= 1000) {
     fixed = Math.round(value).toLocaleString("en-US");
